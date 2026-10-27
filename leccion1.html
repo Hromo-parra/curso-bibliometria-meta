@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Sesión 1 · El mapa y la balanza — Lección</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF; --coralL:#FBE9EB;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }}
+  :root[data-theme="dark"]{
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.55;}
+  a{color:var(--indigo); text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px 70px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0; font-size:13px; color:var(--mute);}
+  .nav .home{font-weight:700;}
+  .hero{background:var(--night); color:#fff; border-radius:16px; padding:24px 22px;}
+  .hero .kick{font-size:12px; font-weight:700; letter-spacing:1.4px; color:#AAB3D1; text-transform:uppercase;}
+  .hero h1{font-size:27px; margin:6px 0 8px; line-height:1.15;}
+  .hero p{color:#C7CEE3; font-size:15px; margin:0;}
+  .goals{background:var(--soft); border-radius:14px; padding:16px 18px; margin:16px 0;}
+  .goals h2{font-size:14px; margin:0 0 8px; color:var(--indigo); text-transform:uppercase; letter-spacing:.8px;}
+  .goals li{font-size:14.5px; margin:5px 0;}
+  h2.sec{font-size:20px; margin:30px 0 8px;}
+  p.body, li.body{font-size:15.5px; color:var(--ink);}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0;}
+  @media(max-width:560px){.two{grid-template-columns:1fr;}}
+  .mini{border-radius:12px; padding:14px; border:1px solid var(--border);}
+  .mini.indigo{background:var(--soft);} .mini.teal{background:var(--tealL);} .mini.coral{background:var(--coralL);}
+  .mini h3{margin:0 0 5px; font-size:16px;} .mini.indigo h3{color:var(--indigo);} .mini.teal h3{color:var(--teal);} .mini.coral h3{color:var(--coral);}
+  .mini p{margin:0; font-size:13.5px; color:var(--ink);}
+  .mini .q{display:block; margin-top:8px; font-style:italic; color:var(--mute); font-size:13px;}
+
+  /* interactive */
+  .tool{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin:14px 0;}
+  .seg{display:flex; gap:8px; margin-bottom:10px;}
+  .seg button{flex:1; padding:9px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); color:var(--ink); font-weight:700; font-size:13.5px; cursor:pointer;}
+  .seg button.on{border-color:var(--indigo); background:var(--soft); color:var(--indigo);}
+  svg{width:100%; height:auto; display:block;}
+  .counter{font-size:12.5px; color:var(--mute); font-weight:700; text-align:center; margin:4px 0 12px;}
+  .fgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px;}
+  .ficha{border:1.5px solid var(--border); border-radius:10px; padding:9px 10px; cursor:pointer; background:var(--card); user-select:none; transition:.12s; position:relative;}
+  .ficha.on{border-color:var(--teal); background:var(--tealL);}
+  .ficha .fh{display:flex; gap:6px; align-items:center; margin-bottom:3px;}
+  .fid{background:var(--night); color:#fff; font-size:10px; font-weight:700; border-radius:4px; padding:1px 6px;}
+  .fyear{margin-left:auto; font-weight:800; color:var(--indigo); font-size:13px;}
+  .ficha.on .fyear{visibility:hidden;}
+  .ftitle{font-size:11.5px; color:var(--ink); line-height:1.2;}
+  .check{position:absolute; top:7px; right:7px; width:16px; height:16px; border-radius:50%; background:var(--teal); color:#fff; font-size:11px; display:none; align-items:center; justify-content:center;}
+  .ficha.on .check{display:flex;}
+  .insight{display:none; margin-top:10px; padding:11px 13px; border-radius:10px; background:var(--amberL); font-size:13.5px;}
+  .insight.show{display:block;}
+
+  details.q{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin:9px 0;}
+  details.q summary{font-weight:700; font-size:15px; cursor:pointer;}
+  details.q .ans{margin-top:8px; font-size:14px; color:var(--ink);}
+  details.q .verd{font-weight:800;} .verd.si{color:var(--teal);} .verd.no{color:var(--coral);}
+
+  .prep{background:var(--night); color:#fff; border-radius:16px; padding:22px; margin:26px 0;}
+  .prep h2{margin:0 0 6px; font-size:19px; color:var(--amber);}
+  .prep p{margin:0 0 12px; color:#C7CEE3; font-size:14.5px;}
+  .prep ol{margin:0; padding-left:20px;} .prep li{margin:7px 0; font-size:15px;}
+  .foot{font-size:12px; color:var(--mute); text-align:center; margin-top:24px;}
+  .btnrow{display:flex; justify-content:space-between; margin-top:24px; font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="home" href="index.html">← Aula del curso</a><span>Sesión 1 · para hacer en casa · ~20 min</span></div>
+
+  <div class="hero">
+    <div class="kick">Sesión 1 · antes de la clase</div>
+    <h1>El mapa y la balanza</h1>
+    <p>Haz esta lección en casa, a tu ritmo. En la sesión en vivo la discutimos y resolvemos dudas.</p>
+  </div>
+
+  <div class="goals">
+    <h2>Al terminar sabrás</h2>
+    <ul style="margin:0;padding-left:18px;">
+      <li class="body">Qué es la bibliometría y qué es el meta-análisis, y en qué se distinguen de una revisión.</li>
+      <li class="body">La diferencia entre una pregunta descriptiva y una de efecto.</li>
+      <li class="body">Cuál es tu rama y tu pregunta para el proyecto del curso.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">Dos miradas a la misma literatura</h2>
+  <p class="body">Este curso no estudia a los pacientes: estudia los <b>artículos</b>. Y lo hace de dos formas.</p>
+  <div class="two">
+    <div class="mini indigo"><h3>Bibliometría · el mapa</h3><p>Describe cómo se investiga un tema: cuánto se publica, quién, qué temas y cómo se conectan.</p></div>
+    <div class="mini teal"><h3>Meta-análisis · la balanza</h3><p>Combina los resultados numéricos de varios estudios en una respuesta: ¿qué tan fuerte es el efecto, en promedio?</p></div>
+  </div>
+
+  <h2 class="sec">Que no se confundan: tres parientes</h2>
+  <div class="two">
+    <div class="mini coral"><h3>Revisión</h3><p>Lee y <b>juzga</b> cada estudio.<span class="q">«¿La siesta mejora la memoria?»</span></p></div>
+    <div class="mini indigo"><h3>Bibliometría</h3><p><b>Describe</b> el paisaje.<span class="q">«¿Cuánto y quién lo ha estudiado?»</span></p></div>
+  </div>
+  <div class="mini teal" style="margin-top:12px;"><h3>Meta-análisis</h3><p><b>Combina</b> los resultados en un número.<span class="q">«¿Qué tan fuerte es el efecto, en promedio?»</span></p></div>
+
+  <h2 class="sec">Tu rama: ¿descriptiva o de efecto?</h2>
+  <p class="body">Tu <b>pregunta</b> decide tu rama:</p>
+  <ul>
+    <li class="body"><b>Descriptiva</b> (cuánto, quién, qué temas) → rama <b style="color:var(--indigo)">bibliometría</b>.</li>
+    <li class="body"><b>De efecto</b> (qué tan grande es, combinando estudios) → rama <b style="color:var(--teal)">meta-análisis</b>.</li>
+  </ul>
+
+  <h2 class="sec">Pruébalo: tu primera gráfica</h2>
+  <p class="body">Aquí tienes 6 fichas (sintéticas) sobre sueño y memoria. <b>Toca cada una para contarla</b> y mira crecer la barra. Cambia entre «por año» y «por tipo».</p>
+  <div class="tool">
+    <div class="seg" id="seg"><button data-g="year" class="on">Por año</button><button data-g="type">Por tipo</button></div>
+    <svg id="chart" viewBox="0 0 680 300" role="img" aria-label="gráfica"></svg>
+    <div class="counter" id="counter">Contadas: 0 de 6</div>
+    <div class="fgrid" id="fichas"></div>
+    <div class="insight" id="insight"></div>
+  </div>
+
+  <h2 class="sec">Autoevaluación</h2>
+  <p class="body">Antes de ver la respuesta, piénsala tú:</p>
+  <details class="q"><summary>«¿Cuántos estudios sobre sueño y memoria hay por año?» — ¿descriptiva o de efecto?</summary>
+    <div class="ans"><span class="verd si">Descriptiva</span> → rama bibliometría. Cuentas publicaciones; no combinas resultados.</div></details>
+  <details class="q"><summary>«En promedio, ¿cuánto mejora la memoria dormir?» — ¿descriptiva o de efecto?</summary>
+    <div class="ans"><span class="verd si">De efecto</span> → rama meta-análisis. Combinas los resultados de varios estudios.</div></details>
+  <details class="q"><summary>Un año con 0 publicaciones en tu conjunto significa que nadie lo investigó. ¿Verdadero o falso?</summary>
+    <div class="ans"><span class="verd no">Falso.</span> «Cero observado ≠ desconocido»: solo significa que en TUS fichas no hay ninguna de ese año.</div></details>
+
+  <div class="prep">
+    <h2>Para la sesión en vivo</h2>
+    <p>Trae esto listo; es con lo que arrancamos la discusión:</p>
+    <ol>
+      <li>Un <b>tema</b> que te interese (o usa sueño y memoria).</li>
+      <li>Tu <b>pregunta</b>: ¿es descriptiva o de efecto?</li>
+      <li>Tu <b>rama</b> elegida: bibliometría o meta-análisis.</li>
+    </ol>
+  </div>
+
+  <div class="btnrow"><a href="index.html">← Aula del curso</a><a href="leccion2.html">Sesión 2 →</a></div>
+  <p class="foot">Ejemplos con datos sintéticos · no es evidencia real.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var fichas=[
+    {id:"A1",year:"2020",type:"artículo",title:"Sueño REM y consolidación de la memoria"},
+    {id:"A2",year:"2021",type:"artículo",title:"Siestas y retención de listas de palabras"},
+    {id:"A3",year:"2022",type:"artículo",title:"Privación de sueño y memoria de trabajo"},
+    {id:"A4",year:"2022",type:"revisión",title:"Revisión: sueño y memoria episódica"},
+    {id:"A5",year:"2024",type:"artículo",title:"Sueño de ondas lentas y memoria espacial"},
+    {id:"A6",year:"2024",type:"editorial",title:"Editorial: sueño y memoria"}
+  ];
+  var cats={year:["2020","2021","2022","2023","2024"],type:["artículo","revisión","editorial"]};
+  var colors={year:"#4F46E5",type:"#0E9F8E"};
+  var counted={},group="year";
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+  function el(t,a,x){var e=document.createElementNS("http://www.w3.org/2000/svg",t);for(var k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;return e;}
+  function draw(){
+    var svg=document.getElementById("chart");while(svg.firstChild)svg.removeChild(svg.firstChild);
+    var ks=cats[group],c={};ks.forEach(function(k){c[k]=0;});
+    fichas.forEach(function(f){if(counted[f.id])c[f[group]]++;});
+    var W=680,H=300,L=40,R=16,T=18,B=48,mx=group==="year"?2:4,pH=H-T-B,pW=W-L-R;
+    var ink=css("--ink"),mute=css("--mute"),bd=css("--border"),col=colors[group];
+    for(var v=0;v<=mx;v++){var y=T+pH-(v/mx)*pH;svg.appendChild(el("line",{x1:L,y1:y,x2:W-R,y2:y,stroke:bd,"stroke-width":1,opacity:v===0?1:.6}));svg.appendChild(el("text",{x:L-7,y:y+4,"text-anchor":"end","font-size":11,fill:mute},""+v));}
+    var n=ks.length,slot=pW/n,bw=Math.min(66,slot*0.56);
+    ks.forEach(function(k,i){var cx=L+slot*(i+0.5),val=c[k],h=(val/mx)*pH,y=T+pH-h;
+      if(val===0){svg.appendChild(el("rect",{x:cx-bw/2,y:T+pH-2,width:bw,height:2,rx:1,fill:mute,opacity:.35}));}
+      else{svg.appendChild(el("rect",{x:cx-bw/2,y:y,width:bw,height:h,rx:4,fill:col}));}
+      svg.appendChild(el("text",{x:cx,y:(val===0?T+pH-7:y-6),"text-anchor":"middle","font-size":12,fill:(val===0?mute:ink),"font-weight":"bold"},""+val));
+      svg.appendChild(el("text",{x:cx,y:H-30,"text-anchor":"middle","font-size":12,fill:ink},k));});
+    svg.appendChild(el("text",{x:L+pW/2,y:H-9,"text-anchor":"middle","font-size":11,fill:mute},group==="year"?"publicaciones por año":"por tipo documental"));
+    var tot=fichas.filter(function(f){return counted[f.id];}).length;
+    document.getElementById("counter").textContent="Contadas: "+tot+" de 6";
+    var ins=document.getElementById("insight");
+    if(tot===6){ins.classList.add("show");ins.innerHTML=group==="year"
+      ?'<b>¡Tu primera gráfica!</b> El 2023 marca 0: «cero observado ≠ desconocido» — en estas 6 fichas no hay ninguna de ese año, no que nadie investigara.'
+      :'<b>Mismo conjunto, otra pregunta.</b> Con las mismas 6 fichas respondiste por año y por tipo.';}
+    else ins.classList.remove("show");
+  }
+  function render(){var b=document.getElementById("fichas");b.innerHTML="";fichas.forEach(function(f){
+    var d=document.createElement("div");d.className="ficha"+(counted[f.id]?" on":"");d.dataset.id=f.id;
+    d.innerHTML='<div class="check">\u2713</div><div class="fh"><span class="fid">'+f.id+'</span><span class="fyear">'+f.year+'</span></div><div class="ftitle">'+f.title+'</div>';
+    b.appendChild(d);});}
+  document.getElementById("fichas").addEventListener("click",function(e){var d=e.target.closest(".ficha");if(!d)return;var id=d.dataset.id;counted[id]=!counted[id];d.classList.toggle("on",counted[id]);draw();});
+  document.getElementById("seg").addEventListener("click",function(e){var b=e.target.closest("button[data-g]");if(!b)return;group=b.dataset.g;[].forEach.call(this.querySelectorAll("button"),function(x){x.classList.toggle("on",x===b);});draw();});
+  if(window.matchMedia)window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",draw);
+  render();draw();
+})();
+</script>
+</body>
+</html>

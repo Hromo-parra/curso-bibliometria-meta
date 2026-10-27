@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Sesión 3 · Descriptivos y redes — Lección</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF; --coralL:#FBE9EB;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }}
+  :root[data-theme="dark"]{
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.55;}
+  a{color:var(--indigo); text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px 70px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0; font-size:13px; color:var(--mute);}
+  .nav .home{font-weight:700;}
+  .hero{background:var(--night); color:#fff; border-radius:16px; padding:24px 22px;}
+  .hero .kick{font-size:12px; font-weight:700; letter-spacing:1.4px; color:#AAB3D1; text-transform:uppercase;}
+  .hero h1{font-size:27px; margin:6px 0 8px; line-height:1.15;}
+  .hero p{color:#C7CEE3; font-size:15px; margin:0;}
+  .goals{background:var(--soft); border-radius:14px; padding:16px 18px; margin:16px 0;}
+  .goals h2{font-size:14px; margin:0 0 8px; color:var(--indigo); text-transform:uppercase; letter-spacing:.8px;}
+  .goals li{font-size:14.5px; margin:5px 0;}
+  h2.sec{font-size:20px; margin:30px 0 8px;}
+  p.body,li.body{font-size:15.5px; color:var(--ink);}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0;}
+  @media(max-width:560px){.two{grid-template-columns:1fr;}}
+  .mini{border-radius:12px; padding:14px; border:1px solid var(--border);}
+  .mini.indigo{background:var(--soft);} .mini.teal{background:var(--tealL);} .mini.coral{background:var(--coralL);} .mini.amber{background:var(--amberL);}
+  .mini h3{margin:0 0 5px; font-size:16px;} .mini.indigo h3{color:var(--indigo);} .mini.teal h3{color:var(--teal);} .mini.coral h3{color:var(--coral);} .mini.amber h3{color:var(--amber);}
+  .mini p{margin:0; font-size:13.5px; color:var(--ink);}
+
+  .tool{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin:14px 0;}
+  svg{width:100%; height:auto; display:block;}
+  .slider{display:flex; align-items:center; gap:12px; margin:8px 0 4px;}
+  .slider label{font-size:13.5px; font-weight:700; color:var(--mute); white-space:nowrap;}
+  input[type=range]{flex:1; accent-color:var(--indigo);}
+  .thrval{font-weight:800; color:var(--indigo); font-size:15px; width:26px; text-align:center;}
+  .netnote{font-size:13.5px; padding:10px 13px; border-radius:10px; background:var(--amberL); margin-top:6px;}
+  .count{font-size:12.5px; color:var(--mute); text-align:center; font-weight:700;}
+
+  details.q{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin:9px 0;}
+  details.q summary{font-weight:700; font-size:15px; cursor:pointer;}
+  details.q .ans{margin-top:8px; font-size:14px;} .verd{font-weight:800;} .verd.si{color:var(--teal);} .verd.no{color:var(--coral);}
+
+  .prep{background:var(--night); color:#fff; border-radius:16px; padding:22px; margin:26px 0;}
+  .prep h2{margin:0 0 6px; font-size:19px; color:var(--amber);}
+  .prep p{margin:0 0 12px; color:#C7CEE3; font-size:14.5px;}
+  .prep ol{margin:0; padding-left:20px;} .prep li{margin:7px 0; font-size:15px;}
+  .foot{font-size:12px; color:var(--mute); text-align:center; margin-top:24px;}
+  .btnrow{display:flex; justify-content:space-between; margin-top:24px; font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="home" href="index.html">← Aula del curso</a><span>Sesión 3 · para hacer en casa · ~25 min</span></div>
+
+  <div class="hero">
+    <div class="kick">Sesión 3 · rama bibliometría · antes de la clase</div>
+    <h1>Describir y mapear tu corpus</h1>
+    <p>Hoy aprendes a describir tu corpus con tablas y gráficas, y a leer un mapa de temas. En la sesión en vivo lo discutimos.</p>
+  </div>
+
+  <div class="goals">
+    <h2>Al terminar sabrás</h2>
+    <ul style="margin:0;padding-left:18px;">
+      <li class="body">Hacer frecuencias y proporciones con el <b>denominador</b> explícito.</li>
+      <li class="body">Leer un mapa de co-ocurrencia: nodos, enlaces y grupos.</li>
+      <li class="body">Por qué el <b>umbral</b> cambia la red — y no atribuir causalidad.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">Contar bien (descriptivos)</h2>
+  <p class="body">En la Sesión 1 contaste 6 fichas de degustación. Tu corpus real tiene más (p. ej. ~20): la misma idea, con cuidado.</p>
+  <div class="two">
+    <div class="mini indigo"><h3>Frecuencia y proporción</h3><p>No basta «4 publicaciones». Di «4 <b>de 20</b>» (20%). Siempre el total.</p></div>
+    <div class="mini amber"><h3>Cero ≠ desconocido</h3><p>Un año en 0 significa «ninguna observada en tu corpus», no «nadie lo investigó».</p></div>
+  </div>
+  <p class="body">Un mismo corpus responde varias preguntas: por año, por revista, por tipo, por país. Cada columna de tu tabla abre una.</p>
+
+  <h2 class="sec">De contar a relacionar</h2>
+  <p class="body">Ahora miramos qué <b>temas aparecen juntos</b> en los mismos artículos. Si «sueño» y «memoria» salen muchas veces en los mismos documentos, se conectan fuerte. Eso dibuja un mapa (una <b>red de co-ocurrencia</b>).</p>
+
+  <h2 class="sec">Pruébalo: mueve el umbral</h2>
+  <p class="body">Esta es una red de temas (sintética). <b>Mueve el deslizador</b> y mira cómo cambia: el umbral decide qué conexiones se muestran.</p>
+  <div class="tool">
+    <svg id="net" viewBox="0 0 600 420" role="img" aria-label="red interactiva"></svg>
+    <div class="count" id="count"></div>
+    <div class="slider"><label>Umbral</label><input type="range" id="thr" min="1" max="3" step="1" value="1"><span class="thrval" id="thrv">1</span></div>
+    <div class="netnote" id="note"></div>
+  </div>
+
+  <h2 class="sec">Leer la red con prudencia</h2>
+  <div class="two">
+    <div class="mini teal"><h3>Sí puedes</h3><p>Describir qué términos van juntos, señalar grupos y mostrar el efecto del umbral.</p></div>
+    <div class="mini coral"><h3>No puedes</h3><p>Decir que un grupo «es» una escuela, afirmar causalidad, ni tratar una etiqueta como un hallazgo.</p></div>
+  </div>
+
+  <h2 class="sec">Autoevaluación</h2>
+  <details class="q"><summary>En tu corpus, «4 publicaciones en 2024» es suficiente para concluir. ¿Verdadero o falso?</summary>
+    <div class="ans"><span class="verd no">Falso.</span> Falta el denominador: ¿4 de cuántas? «4 de 20» y «4 de 200» dicen cosas distintas.</div></details>
+  <details class="q"><summary>Si subes el umbral y desaparece una conexión, esa relación no existe. ¿Verdadero o falso?</summary>
+    <div class="ans"><span class="verd no">Falso.</span> «Ausente de la figura» ≠ «inexistente». El umbral solo decide qué se dibuja.</div></details>
+  <details class="q"><summary>Dos términos muy conectados en la red, ¿uno causa al otro?</summary>
+    <div class="ans"><span class="verd no">No.</span> La red describe coincidencias, no causas. No se infiere causalidad de una co-ocurrencia.</div></details>
+
+  <div class="prep">
+    <h2>Para la sesión en vivo</h2>
+    <p>Trae esto listo:</p>
+    <ol>
+      <li>Una <b>tabla</b> de tu corpus (frecuencia y proporción de alguna columna).</li>
+      <li>Una observación de la red: ¿qué relación se pierde al subir el umbral?</li>
+      <li>Una frase que tu análisis <b>NO</b> permite concluir.</li>
+    </ol>
+  </div>
+
+  <div class="btnrow"><a href="leccion2.html">← Sesión 2</a><a href="index.html">Aula del curso →</a></div>
+  <p class="foot">Ejemplos con datos sintéticos · no es evidencia real.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var nodes={
+    "sueño":[340,185,7], "memoria":[210,220,7], "consolidación":[300,275,4], "REM":[505,170,2],
+    "privación":[80,190,2], "hipocampo":[150,315,2], "siesta":[450,255,2], "atención":[165,105,2],
+    "estrés":[255,78,2], "ondas lentas":[300,350,2]
+  };
+  var edges=[
+    ["sueño","memoria",3],["sueño","REM",3],["memoria","consolidación",2],["sueño","consolidación",2],
+    ["memoria","hipocampo",2],["sueño","privación",2],["privación","memoria",1],["siesta","memoria",1],
+    ["atención","memoria",1],["estrés","sueño",1],["ondas lentas","sueño",2],["ondas lentas","memoria",1],
+    ["hipocampo","consolidación",1],["REM","consolidación",1],["atención","estrés",1],["siesta","sueño",1]
+  ];
+  var notes={
+    1:"Umbral bajo: ves todas las relaciones, incluso las débiles (que pueden ser ruido).",
+    2:"Umbral medio: se quedan las relaciones más frecuentes; el mapa se simplifica.",
+    3:"Umbral alto: solo lo más fuerte… pero desaparecen relaciones reales. «Ausente de la figura» ≠ «inexistente»."
+  };
+  var svg=document.getElementById("net");
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+  function el(t,a,x){var e=document.createElementNS("http://www.w3.org/2000/svg",t);for(var k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;return e;}
+  function draw(thr){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    var col=css("--indigo"),ink=css("--ink"),line="#9FB0D8";
+    var shown=0;
+    edges.forEach(function(e){ if(e[2]>=thr){ shown++; var a=nodes[e[0]],b=nodes[e[1]];
+      svg.appendChild(el("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:line,"stroke-width":1+e[2]*0.9,opacity:0.7,"stroke-linecap":"round"})); } });
+    for(var n in nodes){var p=nodes[n],r=9+p[2]*2;
+      svg.appendChild(el("circle",{cx:p[0],cy:p[1],r:r,fill:col,stroke:"#fff","stroke-width":2}));
+      svg.appendChild(el("text",{x:p[0],y:p[1]+r+13,"text-anchor":"middle","font-size":13,fill:ink,"font-weight":(p[2]>=4?"bold":"normal")},n));}
+    document.getElementById("count").textContent=shown+" conexiones visibles";
+    document.getElementById("note").textContent=notes[thr];
+  }
+  var thr=document.getElementById("thr");
+  thr.addEventListener("input",function(){document.getElementById("thrv").textContent=this.value;draw(+this.value);});
+  if(window.matchMedia)window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){draw(+thr.value);});
+  draw(1);
+})();
+</script>
+</body>
+</html>

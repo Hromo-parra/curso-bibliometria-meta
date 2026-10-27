@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Sesión 2 · Del resultado al corpus — Lección</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF; --coralL:#FBE9EB;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }}
+  :root[data-theme="dark"]{
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.55;}
+  a{color:var(--indigo); text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px 70px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0; font-size:13px; color:var(--mute);}
+  .nav .home{font-weight:700;}
+  .hero{background:var(--night); color:#fff; border-radius:16px; padding:24px 22px;}
+  .hero .kick{font-size:12px; font-weight:700; letter-spacing:1.4px; color:#AAB3D1; text-transform:uppercase;}
+  .hero h1{font-size:27px; margin:6px 0 8px; line-height:1.15;}
+  .hero p{color:#C7CEE3; font-size:15px; margin:0;}
+  .goals{background:var(--soft); border-radius:14px; padding:16px 18px; margin:16px 0;}
+  .goals h2{font-size:14px; margin:0 0 8px; color:var(--indigo); text-transform:uppercase; letter-spacing:.8px;}
+  .goals li{font-size:14.5px; margin:5px 0;}
+  h2.sec{font-size:20px; margin:30px 0 8px;}
+  p.body,li.body{font-size:15.5px; color:var(--ink);}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0;}
+  @media(max-width:560px){.two{grid-template-columns:1fr;}}
+  .mini{border-radius:12px; padding:14px; border:1px solid var(--border);}
+  .mini.indigo{background:var(--soft);} .mini.teal{background:var(--tealL);} .mini.coral{background:var(--coralL);} .mini.amber{background:var(--amberL);}
+  .mini h3{margin:0 0 5px; font-size:16px;} .mini.indigo h3{color:var(--indigo);} .mini.teal h3{color:var(--teal);} .mini.coral h3{color:var(--coral);} .mini.amber h3{color:var(--amber);}
+  .mini p{margin:0; font-size:13.5px; color:var(--ink);}
+
+  .protocard{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin:12px 0;}
+  .protocard b{color:var(--indigo);}
+
+  /* corpus game */
+  .tool{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin:14px 0;}
+  .tally{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:12px;}
+  .tally .t{font-size:12.5px; font-weight:700; padding:3px 9px; border-radius:20px;}
+  .t.inc{background:var(--tealL); color:var(--teal);} .t.exc{background:var(--coralL); color:var(--coral);}
+  .t.unc{background:var(--amberL); color:var(--amber);} .t.pend{background:var(--soft); color:var(--mute);}
+  .ficha{border-bottom:1px solid var(--border); padding:12px 0;}
+  .ficha:last-of-type{border-bottom:none;}
+  .fh{display:flex; gap:7px; align-items:center;}
+  .fid{background:var(--night); color:#fff; font-size:10.5px; font-weight:700; border-radius:5px; padding:2px 8px;}
+  .fbadge{font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; background:var(--soft); color:var(--mute);}
+  .ftitle{font-weight:700; font-size:14.5px; margin:6px 0 2px;}
+  .fmeta{font-size:12.5px; color:var(--mute);} .fmeta .miss{color:var(--coral); font-weight:700;}
+  .choices{display:flex; gap:7px; margin-top:9px; flex-wrap:wrap;}
+  .choices button{flex:1; min-width:84px; border:1.5px solid var(--border); background:var(--card); color:var(--ink); padding:8px 5px; border-radius:9px; font-weight:700; font-size:13px; cursor:pointer;}
+  .choices button.sel-inc{border-color:var(--teal); background:var(--tealL); color:var(--teal);}
+  .choices button.sel-exc{border-color:var(--coral); background:var(--coralL); color:var(--coral);}
+  .choices button.sel-unc{border-color:var(--amber); background:var(--amberL); color:var(--amber);}
+  .fb{display:none; margin-top:8px; font-size:12.5px; padding:8px 11px; border-radius:9px;}
+  .fb.show{display:block;} .fb.ok{background:var(--tealL);} .fb.diff{background:var(--amberL);}
+  .fb .m{font-weight:700;}
+  .gobtn{border:1px solid var(--indigo); background:var(--indigo); color:#fff; padding:10px 15px; border-radius:10px; font-weight:700; font-size:13.5px; cursor:pointer; margin-top:12px;}
+  .gobtn:disabled{opacity:.5; cursor:default;}
+  .summary{display:none; margin-top:12px; padding:12px 14px; border-radius:11px; background:var(--soft); font-size:13.5px;}
+  .summary.show{display:block;}
+
+  details.q{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin:9px 0;}
+  details.q summary{font-weight:700; font-size:15px; cursor:pointer;}
+  details.q .ans{margin-top:8px; font-size:14px;} .verd{font-weight:800;} .verd.si{color:var(--teal);} .verd.no{color:var(--coral);}
+
+  .prep{background:var(--night); color:#fff; border-radius:16px; padding:22px; margin:26px 0;}
+  .prep h2{margin:0 0 6px; font-size:19px; color:var(--amber);}
+  .prep p{margin:0 0 12px; color:#C7CEE3; font-size:14.5px;}
+  .prep ol{margin:0; padding-left:20px;} .prep li{margin:7px 0; font-size:15px;}
+  .foot{font-size:12px; color:var(--mute); text-align:center; margin-top:24px;}
+  .btnrow{display:flex; justify-content:space-between; margin-top:24px; font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="home" href="index.html">← Aula del curso</a><span>Sesión 2 · para hacer en casa · ~25 min</span></div>
+
+  <div class="hero">
+    <div class="kick">Sesión 2 · antes de la clase</div>
+    <h1>Del resultado al corpus</h1>
+    <p>Aprende a decidir qué publicaciones entran a tu estudio y a dejar sus datos limpios. En la sesión en vivo lo discutimos.</p>
+  </div>
+
+  <div class="goals">
+    <h2>Al terminar sabrás</h2>
+    <ul style="margin:0;padding-left:18px;">
+      <li class="body">Distinguir un resultado de búsqueda de un <b>corpus</b> (un conjunto con reglas).</li>
+      <li class="body">Decidir la pertenencia por criterios, sin excluir por datos faltantes.</li>
+      <li class="body">Por qué se conserva el original y se limpia en una copia.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">De «todo lo que salió» a un corpus</h2>
+  <div class="two">
+    <div class="mini coral"><h3>Resultados de búsqueda</h3><p>Lo que devuelve la base: un montón de registros, útiles y ruido mezclados. Todavía no es nada.</p></div>
+    <div class="mini teal"><h3>Corpus</h3><p>El conjunto de publicaciones delimitado <b>con reglas</b>, para responder una pregunta concreta.</p></div>
+  </div>
+  <p class="body">Pasar de uno al otro es el trabajo de hoy: decidir con criterios y dejar constancia de por qué.</p>
+
+  <h2 class="sec">El protocolo (las reglas, antes de decidir)</h2>
+  <div class="protocard">
+    <p class="body" style="margin:0 0 8px;"><b>Pregunta:</b> «¿Cómo se distribuye la investigación sobre sueño y memoria?»</p>
+    <ul style="margin:0;padding-left:18px;">
+      <li class="body"><b>C1 · Tema:</b> trata sueño y memoria.</li>
+      <li class="body"><b>C2 · Periodo:</b> años 2020–2024.</li>
+      <li class="body"><b>C3 · Contenido:</b> no excluido por lo que diga el resumen.</li>
+      <li class="body"><b>Tipos:</b> artículos, revisiones y editoriales (todos cuentan).</li>
+      <li class="body"><b>Regla de oro:</b> no se excluye por falta de resumen, DOI o año. Si falta el dato para decidir → <b>incierto</b>.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">Pruébalo: ¿esta ficha entra?</h2>
+  <p class="body">Decide cada una de las 8 fichas según el protocolo. Cuida que tu conteo sume 8. Al final, toca <b>«Revisar»</b> para ver la clave y el porqué.</p>
+  <div class="tool">
+    <div class="tally" id="tally"></div>
+    <div id="fichas"></div>
+    <button class="gobtn" id="check" disabled>Revisar con la clave</button>
+    <div class="summary" id="summary"></div>
+  </div>
+
+  <h2 class="sec">Y luego: datos limpios</h2>
+  <div class="two">
+    <div class="mini indigo"><h3>Original → copia</h3><p>El original se conserva tal cual (solo lectura); corriges en una copia versionada, con fecha y motivo.</p></div>
+    <div class="mini amber"><h3>Faltantes</h3><p>Un dato ausente se reporta, no se inventa ni borra la ficha: solo limita ESE análisis.</p></div>
+  </div>
+  <div class="two">
+    <div class="mini teal"><h3>Duplicados</h3><p>Solo se unen por el <b>mismo DOI</b>. Títulos parecidos → revisión manual, nunca regla automática.</p></div>
+    <div class="mini indigo"><h3>Bitácora</h3><p>Cada cambio queda registrado (antes, después, motivo) y los conteos se reconcilian.</p></div>
+  </div>
+
+  <h2 class="sec">Autoevaluación</h2>
+  <details class="q"><summary>A una ficha le falta el resumen. ¿Se excluye?</summary>
+    <div class="ans"><span class="verd no">No.</span> Si el título no basta para decidir, queda <b>incierto</b>. No se excluye por un dato ausente.</div></details>
+  <details class="q"><summary>¿Puedo juntar como duplicados dos fichas con títulos parecidos, automáticamente?</summary>
+    <div class="ans"><span class="verd no">No.</span> La única regla automática es el <b>mismo DOI normalizado</b>. Lo demás es revisión humana.</div></details>
+  <details class="q"><summary>¿Corrijo los errores sobre el archivo original?</summary>
+    <div class="ans"><span class="verd no">No.</span> El original se conserva intacto; se trabaja en una <b>copia versionada</b>.</div></details>
+
+  <div class="prep">
+    <h2>Para la sesión en vivo</h2>
+    <p>Trae esto listo; con eso arrancamos la discusión:</p>
+    <ol>
+      <li>Tu <b>pregunta</b> de la Sesión 1.</li>
+      <li>Dos <b>criterios</b> que usarías para decidir qué publicaciones entran en TU corpus.</li>
+      <li>Una duda del juego de corpus (alguna ficha que te costó decidir).</li>
+    </ol>
+  </div>
+
+  <div class="btnrow"><a href="leccion1.html">← Sesión 1</a><a href="index.html">Aula del curso →</a></div>
+  <p class="foot">Ejercicio sintético con fines didácticos · no es evidencia real.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var fichas=[
+    {id:"R1",t:"El sueño REM y la consolidación de la memoria",year:"2021",type:"artículo",note:"resumen presente",key:"incluir",why:"Trata sueño y memoria, y 2021 está en el periodo."},
+    {id:"R2",t:"Revisión: sueño y memoria episódica",year:"2022",type:"revisión",note:"sin resumen",key:"incluir",why:"El título acredita el tema; el resumen no es requisito y las revisiones entran."},
+    {id:"R3",t:"Editorial: hacia dónde va sueño–memoria",year:"2024",type:"editorial",note:"",key:"incluir",why:"Las editoriales están admitidas; el tema es explícito."},
+    {id:"R4",t:"Sueño profundo y memoria espacial",year:"2019",type:"artículo",note:"",key:"excluir",why:"2019 queda fuera del periodo 2020–2024 (C2)."},
+    {id:"R5",t:"Siestas y rendimiento deportivo",year:"2022",type:"artículo",note:"el resumen dice que no estudia memoria",key:"excluir",why:"El resumen declara que no estudia el tema (C3)."},
+    {id:"R6",t:"Privación de sueño y memoria de trabajo",year:"—",type:"artículo",note:"falta el año",miss:true,key:"incierto",why:"Falta el año para evaluar C2. No se excluye por un dato ausente: incierto."},
+    {id:"R7",t:"Schlaf und Gedächtnis (sueño y memoria)",year:"2020",type:"artículo",note:"en alemán",key:"incluir",why:"El título acredita el tema; no hay restricción de idioma."},
+    {id:"R8",t:"Entrenamiento cognitivo en adultos mayores",year:"2023",type:"artículo",note:"sin resumen",miss:true,key:"incierto",why:"«Cognitivo» no acredita «memoria» por sí solo, y no hay resumen: incierto."}
+  ];
+  var lab={incluir:"Incluir",excluir:"Excluir",incierto:"Incierto"};
+  var st={}; fichas.forEach(function(f){st[f.id]=null;}); var done=false;
+  var cont=document.getElementById("fichas");
+  function render(){
+    cont.innerHTML="";
+    fichas.forEach(function(f){
+      var d=document.createElement("div"); d.className="ficha";
+      var meta=(f.miss?'<span class="miss">'+f.note+'</span>':(f.note||''));
+      var yr=f.miss&&f.year==="—"?'<span class="miss">año: faltante</span>':'año: '+f.year;
+      d.innerHTML='<div class="fh"><span class="fid">'+f.id+'</span><span class="fbadge">'+f.type+'</span></div>'+
+        '<div class="ftitle">'+f.t+'</div><div class="fmeta">'+yr+(meta?' · '+meta:'')+'</div>'+
+        '<div class="choices" data-id="'+f.id+'">'+btn(f.id,"incluir")+btn(f.id,"excluir")+btn(f.id,"incierto")+'</div>'+
+        '<div class="fb" id="fb-'+f.id+'"></div>';
+      cont.appendChild(d);
+    });
+  }
+  function btn(id,v){return '<button class="'+(st[id]===v?"sel-"+v.slice(0,3):"")+'" data-v="'+v+'">'+lab[v]+'</button>';}
+  function tally(){
+    var c={incluir:0,excluir:0,incierto:0,p:0};
+    fichas.forEach(function(f){st[f.id]?c[st[f.id]]++:c.p++;});
+    document.getElementById("tally").innerHTML='<span class="t inc">Incluir '+c.incluir+'</span><span class="t exc">Excluir '+c.excluir+'</span><span class="t unc">Incierto '+c.incierto+'</span><span class="t pend">Sin decidir '+c.p+'</span>';
+    document.getElementById("check").disabled=c.p>0||done;
+  }
+  cont.addEventListener("click",function(e){
+    if(done)return; var b=e.target.closest("button[data-v]"); if(!b)return;
+    var id=b.parentNode.dataset.id,v=b.dataset.v; st[id]=st[id]===v?null:v;
+    [].forEach.call(b.parentNode.querySelectorAll("button"),function(x){x.className=st[id]===x.dataset.v?"sel-"+x.dataset.v.slice(0,3):"";});
+    tally();
+  });
+  document.getElementById("check").addEventListener("click",function(){
+    done=true; this.disabled=true; var m=0;
+    fichas.forEach(function(f){var fb=document.getElementById("fb-"+f.id),ok=st[f.id]===f.key; if(ok)m++;
+      fb.className="fb show "+(ok?"ok":"diff");
+      fb.innerHTML='<div class="m">'+(ok?"✓ Coincide con la clave":"La clave sugiere: "+lab[f.key])+'</div>'+f.why;});
+    var s=document.getElementById("summary"); s.classList.add("show");
+    s.innerHTML='<b>Clave sugerida:</b> 4 incluir · 2 excluir · 2 incierto (N=8). Tus coincidencias: '+m+' de 8.<br><br>'+
+      'Recuerda: no excluir por datos faltantes (R6, R8), los tipos entran (R2, R3), y excluir solo por criterio real (R4, R5). La clave es una sugerencia: lo que importa es justificar con el criterio.';
+  });
+  render(); tally();
+})();
+</script>
+</body>
+</html>

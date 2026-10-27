@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Sesión 4 · De los estudios a los números — Lección</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF; --coralL:#FBE9EB;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }}
+  :root[data-theme="dark"]{
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.55;}
+  a{color:var(--indigo); text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px 70px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0; font-size:13px; color:var(--mute);}
+  .nav .home{font-weight:700;}
+  .hero{background:var(--night); color:#fff; border-radius:16px; padding:24px 22px;}
+  .hero .kick{font-size:12px; font-weight:700; letter-spacing:1.4px; color:#AAB3D1; text-transform:uppercase;}
+  .hero h1{font-size:27px; margin:6px 0 8px; line-height:1.15;}
+  .hero p{color:#C7CEE3; font-size:15px; margin:0;}
+  .goals{background:var(--soft); border-radius:14px; padding:16px 18px; margin:16px 0;}
+  .goals h2{font-size:14px; margin:0 0 8px; color:var(--teal); text-transform:uppercase; letter-spacing:.8px;}
+  .goals li{font-size:14.5px; margin:5px 0;}
+  h2.sec{font-size:20px; margin:30px 0 8px;}
+  p.body,li.body{font-size:15.5px; color:var(--ink);}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0;}
+  @media(max-width:560px){.two{grid-template-columns:1fr;}}
+  .mini{border-radius:12px; padding:14px; border:1px solid var(--border);}
+  .mini.indigo{background:var(--soft);} .mini.teal{background:var(--tealL);} .mini.coral{background:var(--coralL);} .mini.amber{background:var(--amberL);}
+  .mini h3{margin:0 0 5px; font-size:16px;} .mini.indigo h3{color:var(--indigo);} .mini.teal h3{color:var(--teal);} .mini.coral h3{color:var(--coral);} .mini.amber h3{color:var(--amber);}
+  .mini p{margin:0; font-size:13.5px; color:var(--ink);}
+  .scale{display:flex; gap:8px; margin:10px 0;}
+  .scale div{flex:1; text-align:center; padding:9px 4px; border-radius:10px; font-size:13px; font-weight:700;}
+
+  .tool{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin:14px 0;}
+  svg{width:100%; height:auto; display:block;}
+  .readout{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; margin:6px 0 10px;}
+  .readout .big{font-size:22px; font-weight:800; color:var(--teal);}
+  .readout .verdict{font-size:13px; font-weight:700; padding:3px 11px; border-radius:20px;}
+  .v-si{background:var(--tealL); color:var(--teal);} .v-no{background:var(--amberL); color:var(--amber);}
+  .ctl{display:grid; grid-template-columns:96px 1fr 48px; align-items:center; gap:9px; font-size:13px; margin:6px 0;}
+  .ctl label{color:var(--mute); font-weight:700;}
+  .ctl output{font-weight:700; text-align:right; font-variant-numeric:tabular-nums;}
+  input[type=range]{width:100%; accent-color:var(--indigo);}
+
+  details.q{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin:9px 0;}
+  details.q summary{font-weight:700; font-size:15px; cursor:pointer;}
+  details.q .ans{margin-top:8px; font-size:14px;} .verd{font-weight:800;} .verd.si{color:var(--teal);} .verd.no{color:var(--coral);}
+
+  .prep{background:var(--night); color:#fff; border-radius:16px; padding:22px; margin:26px 0;}
+  .prep h2{margin:0 0 6px; font-size:19px; color:var(--amber);}
+  .prep p{margin:0 0 12px; color:#C7CEE3; font-size:14.5px;}
+  .prep ol{margin:0; padding-left:20px;} .prep li{margin:7px 0; font-size:15px;}
+  .foot{font-size:12px; color:var(--mute); text-align:center; margin-top:24px;}
+  .btnrow{display:flex; justify-content:space-between; margin-top:24px; font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="home" href="index.html">← Aula del curso</a><span>Sesión 4 · para hacer en casa · ~25 min</span></div>
+
+  <div class="hero">
+    <div class="kick">Sesión 4 · rama meta-análisis · antes de la clase</div>
+    <h1>De los estudios a los números</h1>
+    <p>Hoy aprendes qué es un tamaño de efecto y cómo leer un forest plot. Sin fórmulas. En la sesión en vivo lo discutimos.</p>
+  </div>
+
+  <div class="goals">
+    <h2>Al terminar sabrás</h2>
+    <ul style="margin:0;padding-left:18px;">
+      <li class="body">Qué es un meta-análisis y en qué se distingue de la bibliometría.</li>
+      <li class="body">Entender un <b>tamaño de efecto</b> como «qué tan grande», no solo «si hay diferencia».</li>
+      <li class="body">Leer un <b>forest plot</b>: estudios, incertidumbre, el cero y el diamante.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">¿Qué es un meta-análisis?</h2>
+  <p class="body">Es <b>juntar los resultados de varios estudios en una sola respuesta</b>: en promedio, ¿qué tan fuerte es el efecto? Si la bibliometría dibuja el mapa de un tema, el meta-análisis es la <b>balanza</b> que pesa lo que hallaron los estudios.</p>
+
+  <h2 class="sec">El tamaño de efecto</h2>
+  <p class="body">Cada estudio puede reportar su resultado en otra escala. Para compararlos, todo se traduce a un número común: el <b>tamaño de efecto</b> (p. ej. la «d»). No dice solo «hay diferencia»: dice <b>qué tan grande</b> es.</p>
+  <div class="scale">
+    <div style="background:var(--soft);color:var(--indigo);">0.2<br>pequeño</div>
+    <div style="background:var(--tealL);color:var(--teal);">0.5<br>moderado</div>
+    <div style="background:var(--amberL);color:var(--amber);">0.8<br>grande</div>
+  </div>
+  <p class="body" style="font-size:14px;color:var(--mute);">Imagina dos grupos como dos campanas: cuanto más separadas, mayor el efecto.</p>
+
+  <h2 class="sec">Dos datos por estudio</h2>
+  <div class="two">
+    <div class="mini indigo"><h3>El efecto</h3><p>El «punto» del resultado de cada estudio (p. ej. d = 0.42).</p></div>
+    <div class="mini teal"><h3>La incertidumbre</h3><p>Un rango (intervalo). Más participantes → rango más angosto → el estudio «pesa» más.</p></div>
+  </div>
+
+  <h2 class="sec">Pruébalo: mueve los estudios</h2>
+  <p class="body">Cada barra es un estudio. <b>Mueve su deslizador</b> y mira cómo cambia el <b>diamante</b> (el resultado combinado) y si cruza el <b>0</b>.</p>
+  <div class="tool">
+    <svg id="forest" viewBox="0 0 640 300" role="img" aria-label="forest plot"></svg>
+    <div class="readout">
+      <div><span style="font-size:12px;color:var(--mute);font-weight:700;">COMBINADO&nbsp;</span><span class="big" id="pooled">0.42</span></div>
+      <span class="verdict" id="verdict"></span>
+    </div>
+    <div id="ctrls"></div>
+  </div>
+
+  <h2 class="sec">Leer con prudencia</h2>
+  <div class="two">
+    <div class="mini teal"><h3>Sí dice</h3><p>Qué tan grande es el efecto combinado y qué tan consistentes son los estudios.</p></div>
+    <div class="mini coral"><h3>No dice</h3><p>No arregla estudios mal hechos (basura entra, basura sale) ni vuelve «verdad» un promedio.</p></div>
+  </div>
+
+  <h2 class="sec">Autoevaluación</h2>
+  <details class="q"><summary>Un tamaño de efecto de 0.5, ¿es pequeño, moderado o grande?</summary>
+    <div class="ans"><span class="verd si">Moderado.</span> Orientativo: ~0.2 pequeño, ~0.5 moderado, ~0.8 grande.</div></details>
+  <details class="q"><summary>Si el diamante combinado cruza el 0, ¿podemos afirmar el efecto?</summary>
+    <div class="ans"><span class="verd no">No.</span> Cruzar el 0 significa que, con estos estudios, no se puede afirmar el efecto con seguridad.</div></details>
+  <details class="q"><summary>Un estudio con más participantes, ¿pesa igual que uno chico?</summary>
+    <div class="ans"><span class="verd no">No.</span> Pesa más, porque su resultado es más preciso (intervalo más angosto).</div></details>
+
+  <div class="prep">
+    <h2>Para la sesión en vivo</h2>
+    <p>Trae esto listo:</p>
+    <ol>
+      <li>En el forest plot: ¿qué estudio tiene el <b>efecto más grande</b>? ¿Cuál es el <b>menos seguro</b>?</li>
+      <li>Mueve un estudio hacia el 0: ¿qué le pasó al <b>diamante</b>?</li>
+      <li>Una frase que un meta-análisis <b>NO</b> permite concluir.</li>
+    </ol>
+  </div>
+
+  <div class="btnrow"><a href="leccion3.html">← Sesión 3</a><a href="index.html">Aula del curso →</a></div>
+  <p class="foot">Modelo simplificado con fines didácticos · no sustituye un meta-análisis real · datos sintéticos.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var studies=[{n:"Estudio A",d:0.42,w:80},{n:"Estudio B",d:0.25,w:120},{n:"Estudio C",d:0.60,w:60},{n:"Estudio D",d:0.33,w:90},{n:"Estudio E",d:0.48,w:100}];
+  var DMIN=-1,DMAX=1.5,COL="#4F46E5",TEAL="#0E9F8E";
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+  function el(t,a,x){var e=document.createElementNS("http://www.w3.org/2000/svg",t);for(var k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;return e;}
+  function pool(){var sw=0,swd=0;studies.forEach(function(s){sw+=s.w;swd+=s.w*s.d;});var d=swd/sw,se=Math.sqrt(1/sw)*3.5;return {d:d,lo:d-1.96*se,hi:d+1.96*se};}
+  var svg=document.getElementById("forest");
+  function X(d){var L=120,R=560;return L+(d-DMIN)/(DMAX-DMIN)*(R-L);}
+  function draw(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    var ink=css("--ink"),mute=css("--mute"),bd=css("--border");
+    var rowH=36,top=14,k=studies.length,axisY=top+k*rowH+6;
+    svg.appendChild(el("line",{x1:X(0),y1:top-4,x2:X(0),y2:axisY,stroke:mute,"stroke-width":1,"stroke-dasharray":"4 3"}));
+    svg.appendChild(el("line",{x1:X(DMIN),y1:axisY,x2:X(DMAX),y2:axisY,stroke:bd,"stroke-width":1}));
+    [-0.5,0,0.5,1].forEach(function(t){svg.appendChild(el("text",{x:X(t),y:axisY+16,"text-anchor":"middle","font-size":11,fill:mute},""+t));});
+    var maxW=Math.max.apply(null,studies.map(function(s){return s.w;}));
+    studies.forEach(function(s,i){var y=top+i*rowH+rowH/2,se=Math.sqrt(1/s.w)*3.5,lo=s.d-1.96*se,hi=s.d+1.96*se;
+      svg.appendChild(el("text",{x:110,y:y+4,"text-anchor":"end","font-size":12,fill:ink},s.n));
+      svg.appendChild(el("line",{x1:X(lo),y1:y,x2:X(hi),y2:y,stroke:COL,"stroke-width":2.4,opacity:0.7,"stroke-linecap":"round"}));
+      var sz=7+11*Math.sqrt(s.w/maxW);
+      svg.appendChild(el("rect",{x:X(s.d)-sz/2,y:y-sz/2,width:sz,height:sz,rx:2,fill:COL}));
+      svg.appendChild(el("text",{x:568,y:y+4,"font-size":11,fill:mute},s.d.toFixed(2)));});
+    var p=pool(),dy=top+k*rowH-4;
+    svg.appendChild(el("polygon",{points:[[X(p.lo),dy],[X(p.d),dy-8],[X(p.hi),dy],[X(p.d),dy+8]].map(function(a){return a.join(",");}).join(" "),fill:TEAL}));
+    svg.appendChild(el("text",{x:110,y:dy+4,"text-anchor":"end","font-size":12,fill:TEAL,"font-weight":"bold"},"Combinado"));
+    document.getElementById("pooled").textContent=p.d.toFixed(2);
+    var v=document.getElementById("verdict"),crosses=p.lo<=0&&p.hi>=0;
+    v.className="verdict "+(crosses?"v-no":"v-si");
+    v.textContent=crosses?"cruza el 0: no concluyente":"no cruza el 0: efecto a favor";
+  }
+  var box=document.getElementById("ctrls");
+  studies.forEach(function(s,i){var d=document.createElement("div");d.className="ctl";
+    d.innerHTML='<label>'+s.n+'</label><input type="range" min="-1" max="1.5" step="0.01" value="'+s.d+'" data-i="'+i+'"><output>'+s.d.toFixed(2)+'</output>';box.appendChild(d);});
+  box.addEventListener("input",function(e){var t=e.target;if(t.dataset.i==null)return;var i=+t.dataset.i;studies[i].d=+t.value;t.nextElementSibling.textContent=(+t.value).toFixed(2);draw();});
+  if(window.matchMedia)window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",draw);
+  draw();
+})();
+</script>
+</body>
+</html>

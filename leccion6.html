@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Sesión 6 · Cierra tu proyecto — Lección</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF; --coralL:#FBE9EB;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }}
+  :root[data-theme="dark"]{
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.55;}
+  a{color:var(--indigo); text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px 70px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0; font-size:13px; color:var(--mute);}
+  .nav .home{font-weight:700;}
+  .hero{background:var(--night); color:#fff; border-radius:16px; padding:24px 22px;}
+  .hero .kick{font-size:12px; font-weight:700; letter-spacing:1.4px; color:#AAB3D1; text-transform:uppercase;}
+  .hero h1{font-size:27px; margin:6px 0 8px; line-height:1.15;}
+  .hero p{color:#C7CEE3; font-size:15px; margin:0;}
+  .goals{background:var(--soft); border-radius:14px; padding:16px 18px; margin:16px 0;}
+  .goals h2{font-size:14px; margin:0 0 8px; color:var(--indigo); text-transform:uppercase; letter-spacing:.8px;}
+  .goals li{font-size:14.5px; margin:5px 0;}
+  h2.sec{font-size:20px; margin:30px 0 8px;}
+  p.body,li.body{font-size:15.5px; color:var(--ink);}
+
+  .check-list{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:8px 16px; margin:12px 0;}
+  .check-list .it{display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:14px;}
+  .check-list .it:last-child{border-bottom:none;}
+  .check-list b{color:var(--indigo);}
+  .dot{flex:none; width:8px; height:8px; border-radius:50%; background:var(--indigo); margin-top:7px;}
+
+  .tool{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin:14px 0;}
+  .stmt{border-bottom:1px solid var(--border); padding:12px 0;}
+  .stmt:last-of-type{border-bottom:none;}
+  .stmt .txt{font-size:14.5px; font-style:italic; margin-bottom:8px;}
+  .opts{display:flex; gap:7px; flex-wrap:wrap;}
+  .opts button{flex:1; min-width:98px; border:1.5px solid var(--border); background:var(--card); color:var(--ink); padding:8px 5px; border-radius:9px; font-weight:700; font-size:12.5px; cursor:pointer;}
+  .opts button.sel-res{border-color:var(--indigo); background:var(--soft); color:var(--indigo);}
+  .opts button.sel-int{border-color:var(--teal); background:var(--tealL); color:var(--teal);}
+  .opts button.sel-lim{border-color:var(--coral); background:var(--coralL); color:var(--coral);}
+  .fb{display:none; margin-top:7px; font-size:12.5px; padding:7px 10px; border-radius:8px;}
+  .fb.show{display:block;} .fb.ok{background:var(--tealL);} .fb.diff{background:var(--amberL);}
+  .gobtn{border:1px solid var(--indigo); background:var(--indigo); color:#fff; padding:10px 15px; border-radius:10px; font-weight:700; font-size:13.5px; cursor:pointer; margin-top:12px;}
+  .gobtn:disabled{opacity:.5; cursor:default;}
+  .score{display:none; margin-top:12px; font-weight:700; font-size:14px;} .score.show{display:block;}
+
+  details.q{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin:9px 0;}
+  details.q summary{font-weight:700; font-size:15px; cursor:pointer;}
+  details.q .ans{margin-top:8px; font-size:14px;} .verd{font-weight:800;} .verd.si{color:var(--teal);} .verd.no{color:var(--coral);}
+
+  .prep{background:var(--night); color:#fff; border-radius:16px; padding:22px; margin:26px 0;}
+  .prep h2{margin:0 0 6px; font-size:19px; color:var(--amber);}
+  .prep p{margin:0 0 12px; color:#C7CEE3; font-size:14.5px;}
+  .prep ol{margin:0; padding-left:20px;} .prep li{margin:7px 0; font-size:15px;}
+  .foot{font-size:12px; color:var(--mute); text-align:center; margin-top:24px;}
+  .btnrow{display:flex; justify-content:space-between; margin-top:24px; font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="home" href="index.html">← Aula del curso</a><span>Sesión 6 · para hacer en casa · ~20 min</span></div>
+
+  <div class="hero">
+    <div class="kick">Sesión 6 · tronco común · antes de la clase</div>
+    <h1>Cierra tu proyecto</h1>
+    <p>Hoy aprendes a dejar tu estudio para que otra persona lo pueda seguir y reconstruir. En la sesión en vivo lo presentas.</p>
+  </div>
+
+  <div class="goals">
+    <h2>Al terminar sabrás</h2>
+    <ul style="margin:0;padding-left:18px;">
+      <li class="body">Qué es la <b>reproducibilidad</b> y qué lleva un informe.</li>
+      <li class="body">Qué piezas forman tu <b>expediente</b>.</li>
+      <li class="body">Distinguir <b>resultados, interpretaciones y límites</b>.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">Reproducible = otro puede rehacerlo</h2>
+  <p class="body">Con tus datos y tus decisiones, otra persona debería llegar al <b>mismo resultado</b>. Si algo no se puede reconstruir, no se acepta como evidencia. Por eso se documenta cada paso.</p>
+
+  <h2 class="sec">Tu expediente, pieza por pieza</h2>
+  <div class="check-list">
+    <div class="it"><span class="dot"></span><div><b>README</b> — pregunta, versiones, instrucciones y límites.</div></div>
+    <div class="it"><span class="dot"></span><div><b>Protocolo</b> — criterios y sus versiones, con motivos.</div></div>
+    <div class="it"><span class="dot"></span><div><b>Fuentes</b> — fecha, consulta, filtros y N.</div></div>
+    <div class="it"><span class="dot"></span><div><b>Originales</b> — intactos (o una referencia verificable).</div></div>
+    <div class="it"><span class="dot"></span><div><b>Tablas y figuras</b> — con denominadores y pies claros.</div></div>
+    <div class="it"><span class="dot"></span><div><b>Bitácora</b> — cada cambio: antes, después, motivo.</div></div>
+    <div class="it"><span class="dot"></span><div><b>Sensibilidad</b> — una comparación «¿y si cambio una regla?».</div></div>
+    <div class="it"><span class="dot"></span><div><b>Declaración de IA</b> — qué, para qué y qué verificaste (o «no se usó»).</div></div>
+  </div>
+
+  <h2 class="sec">Pruébalo: resultado, interpretación o límite</h2>
+  <p class="body">El error más común es mezclarlos. Clasifica cada frase y toca <b>«Revisar»</b>.</p>
+  <div class="tool">
+    <div id="stmts"></div>
+    <button class="gobtn" id="check" disabled>Revisar</button>
+    <div class="score" id="score"></div>
+  </div>
+
+  <h2 class="sec">La declaración de IA</h2>
+  <p class="body">Di qué herramienta usaste y para qué, qué verificaste y qué cambiaste tú — o simplemente «no se usó IA». <b>La línea roja:</b> ninguna ruta añade referencias inventadas ni cifras sin verificar. Y la ruta sin IA vale lo mismo.</p>
+
+  <h2 class="sec">Autoevaluación</h2>
+  <details class="q"><summary>Si nadie puede reconstruir tu tabla, ¿sigue siendo evidencia válida?</summary>
+    <div class="ans"><span class="verd no">No.</span> Un resultado que no se puede reconstruir no se acepta automáticamente como evidencia.</div></details>
+  <details class="q"><summary>¿Qué sube más la nota: muchos gráficos, o decisiones justificadas y reproducibles?</summary>
+    <div class="ans"><span class="verd si">Decisiones justificadas y reproducibles.</span> No se premia cantidad ni uso de IA, sino el juicio.</div></details>
+  <details class="q"><summary>«Esto demuestra que dormir mejora la memoria», ¿es resultado o interpretación?</summary>
+    <div class="ans"><span class="verd no">Interpretación</span> (y arriesgada). El resultado es el número observado; la interpretación va aparte y con cautela.</div></details>
+
+  <div class="prep">
+    <h2>Para la sesión en vivo</h2>
+    <p>Trae listo para presentar en 5 minutos:</p>
+    <ol>
+      <li>Tu <b>pregunta</b>, tu <b>rama</b> y tu <b>resultado principal</b>.</li>
+      <li>Una tabla o figura, con qué <b>SÍ</b> y qué <b>NO</b> concluye.</li>
+      <li>Tu <b>expediente</b> con la declaración de IA.</li>
+    </ol>
+  </div>
+
+  <div class="btnrow"><a href="leccion5.html">← Sesión 5</a><a href="index.html">Aula del curso →</a></div>
+  <p class="foot">Ejercicio con fines didácticos · datos sintéticos · no es evidencia real. 🎓</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var items=[
+    {t:"«En mi corpus, 2022 tuvo 4 publicaciones de 20.»",k:"res",why:"Es lo observado, con su denominador."},
+    {t:"«Parece que el tema está en crecimiento.»",k:"int",why:"Es una lectura de los datos, no el dato."},
+    {t:"«Solo usé mi corpus; puede faltar cobertura de otras bases.»",k:"lim",why:"Reconoce lo que no se puede asegurar."},
+    {t:"«El efecto combinado fue d = 0.42 [0.28, 0.56].»",k:"res",why:"Número observado con su incertidumbre."},
+    {t:"«Esto sugiere que dormir ayuda a la memoria.»",k:"int",why:"Es una inferencia, va aparte y con cautela."},
+    {t:"«No puedo afirmar causalidad con estos datos.»",k:"lim",why:"Declara explícitamente un límite."}
+  ];
+  var lab={res:"Resultado",int:"Interpretación",lim:"Límite"};
+  var st={}; items.forEach(function(_,i){st[i]=null;}); var done=false;
+  var box=document.getElementById("stmts");
+  function btn(i,k){return '<button class="'+(st[i]===k?"sel-"+k:"")+'" data-k="'+k+'">'+lab[k]+'</button>';}
+  function render(){box.innerHTML="";items.forEach(function(it,i){
+    var d=document.createElement("div");d.className="stmt";
+    d.innerHTML='<div class="txt">'+it.t+'</div><div class="opts" data-i="'+i+'">'+btn(i,"res")+btn(i,"int")+btn(i,"lim")+'</div><div class="fb" id="fb-'+i+'"></div>';
+    box.appendChild(d);});}
+  function upd(){var p=0;items.forEach(function(_,i){if(st[i]==null)p++;});document.getElementById("check").disabled=p>0||done;}
+  box.addEventListener("click",function(e){if(done)return;var b=e.target.closest("button[data-k]");if(!b)return;var i=+b.parentNode.dataset.i,k=b.dataset.k;st[i]=st[i]===k?null:k;[].forEach.call(b.parentNode.querySelectorAll("button"),function(x){x.className=st[i]===x.dataset.k?"sel-"+x.dataset.k:"";});upd();});
+  document.getElementById("check").addEventListener("click",function(){done=true;this.disabled=true;var m=0;
+    items.forEach(function(it,i){var fb=document.getElementById("fb-"+i),ok=st[i]===it.k;if(ok)m++;fb.className="fb show "+(ok?"ok":"diff");fb.innerHTML='<b>'+(ok?"✓ "+lab[it.k]:"Es: "+lab[it.k])+'.</b> '+it.why;});
+    var sc=document.getElementById("score");sc.classList.add("show");sc.textContent="Acertaste "+m+" de 6. Recuerda: mantén separados resultado, interpretación y límite.";});
+  render();upd();
+})();
+</script>
+</body>
+</html>

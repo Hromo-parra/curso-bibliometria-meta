@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Sesión 5 · Combinar con cuidado — Lección</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF; --coralL:#FBE9EB;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }}
+  :root[data-theme="dark"]{
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.55;}
+  a{color:var(--indigo); text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px 70px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0; font-size:13px; color:var(--mute);}
+  .nav .home{font-weight:700;}
+  .hero{background:var(--night); color:#fff; border-radius:16px; padding:24px 22px;}
+  .hero .kick{font-size:12px; font-weight:700; letter-spacing:1.4px; color:#AAB3D1; text-transform:uppercase;}
+  .hero h1{font-size:27px; margin:6px 0 8px; line-height:1.15;}
+  .hero p{color:#C7CEE3; font-size:15px; margin:0;}
+  .goals{background:var(--soft); border-radius:14px; padding:16px 18px; margin:16px 0;}
+  .goals h2{font-size:14px; margin:0 0 8px; color:var(--teal); text-transform:uppercase; letter-spacing:.8px;}
+  .goals li{font-size:14.5px; margin:5px 0;}
+  h2.sec{font-size:20px; margin:30px 0 8px;}
+  p.body,li.body{font-size:15.5px; color:var(--ink);}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0;}
+  @media(max-width:560px){.two{grid-template-columns:1fr;}}
+  .mini{border-radius:12px; padding:14px; border:1px solid var(--border);}
+  .mini.indigo{background:var(--soft);} .mini.teal{background:var(--tealL);} .mini.coral{background:var(--coralL);} .mini.amber{background:var(--amberL);}
+  .mini h3{margin:0 0 5px; font-size:16px;} .mini.indigo h3{color:var(--indigo);} .mini.teal h3{color:var(--teal);} .mini.coral h3{color:var(--coral);} .mini.amber h3{color:var(--amber);}
+  .mini p{margin:0; font-size:13.5px; color:var(--ink);}
+
+  .tool{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin:14px 0;}
+  svg{width:100%; height:auto; display:block;}
+  .seg{display:flex; gap:8px; margin-bottom:10px;}
+  .seg button{flex:1; padding:9px; border-radius:9px; border:1.5px solid var(--border); background:var(--card); color:var(--ink); font-weight:700; font-size:13.5px; cursor:pointer;}
+  .seg button.on{border-color:var(--teal); background:var(--tealL); color:var(--teal);}
+  .readout{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; margin:8px 0;}
+  .readout .big{font-size:20px; font-weight:800; color:var(--teal);}
+  .het{font-size:13px; font-weight:800; padding:3px 11px; border-radius:20px;}
+  .het.baja{background:var(--tealL); color:var(--teal);} .het.media{background:var(--amberL); color:var(--amber);} .het.alta{background:var(--coralL); color:var(--coral);}
+  .ctl{display:grid; grid-template-columns:96px 1fr 48px; align-items:center; gap:9px; font-size:13px; margin:5px 0;}
+  .ctl label{color:var(--mute); font-weight:700;} .ctl output{font-weight:700; text-align:right;}
+  input[type=range]{width:100%; accent-color:var(--indigo);}
+
+  details.q{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin:9px 0;}
+  details.q summary{font-weight:700; font-size:15px; cursor:pointer;}
+  details.q .ans{margin-top:8px; font-size:14px;} .verd{font-weight:800;} .verd.si{color:var(--teal);} .verd.no{color:var(--coral);}
+
+  .prep{background:var(--night); color:#fff; border-radius:16px; padding:22px; margin:26px 0;}
+  .prep h2{margin:0 0 6px; font-size:19px; color:var(--amber);}
+  .prep p{margin:0 0 12px; color:#C7CEE3; font-size:14.5px;}
+  .prep ol{margin:0; padding-left:20px;} .prep li{margin:7px 0; font-size:15px;}
+  .foot{font-size:12px; color:var(--mute); text-align:center; margin-top:24px;}
+  .btnrow{display:flex; justify-content:space-between; margin-top:24px; font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="home" href="index.html">← Aula del curso</a><span>Sesión 5 · para hacer en casa · ~25 min</span></div>
+
+  <div class="hero">
+    <div class="kick">Sesión 5 · rama meta-análisis · antes de la clase</div>
+    <h1>Combinar con cuidado</h1>
+    <p>Hoy ves las dos trampas del meta-análisis: ¿los estudios concuerdan? ¿faltan estudios? En la sesión en vivo lo discutimos.</p>
+  </div>
+
+  <div class="goals">
+    <h2>Al terminar sabrás</h2>
+    <ul style="margin:0;padding-left:18px;">
+      <li class="body">Reconocer si los estudios concuerdan o no (<b>heterogeneidad</b>).</li>
+      <li class="body">La diferencia entre efectos <b>fijos y aleatorios</b>, en palabras.</li>
+      <li class="body">Qué es el <b>sesgo de publicación</b> y cómo lo delata un funnel plot.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">Combinar no es solo promediar</h2>
+  <p class="body">Dos meta-análisis pueden dar el <b>mismo diamante</b> (p. ej. 0.40) y significar cosas distintas: en uno los estudios están todos cerca; en otro, muy dispersos. El promedio, solo, no te avisa.</p>
+
+  <h2 class="sec">Heterogeneidad: ¿concuerdan?</h2>
+  <p class="body">Es qué tanto <b>difieren</b> los estudios entre sí. Si apuntan todos al mismo lado, concuerdan (baja heterogeneidad). Si están repartidos, no (alta). El <b>I²</b> es un número que resume eso.</p>
+
+  <h2 class="sec">Pruébalo: separa los estudios</h2>
+  <p class="body"><b>Mueve los deslizadores</b> para acercar o separar los estudios, y cambia entre <b>fijos</b> y <b>aleatorios</b>. Observa la heterogeneidad y cómo se ensancha el intervalo del diamante.</p>
+  <div class="tool">
+    <div class="seg" id="seg"><button data-m="fixed" class="on">Efectos fijos</button><button data-m="random">Efectos aleatorios</button></div>
+    <svg id="forest" viewBox="0 0 640 300" role="img" aria-label="forest plot"></svg>
+    <div class="readout">
+      <div><span style="font-size:12px;color:var(--mute);font-weight:700;">COMBINADO&nbsp;</span><span class="big" id="pooled">0.42</span> <span id="ci" style="color:var(--mute);font-size:13px;"></span></div>
+      <span class="het" id="het"></span>
+    </div>
+    <div id="ctrls"></div>
+  </div>
+  <div class="mini amber" style="margin-top:10px;"><p>Cuando la heterogeneidad es alta, el modelo de <b>efectos aleatorios</b> ensancha el intervalo: es más honesto porque reconoce que los estudios no miden lo mismo.</p></div>
+
+  <h2 class="sec">La otra trampa: sesgo de publicación</h2>
+  <p class="body">Los estudios con resultado «bonito» se publican más; los que no hallan efecto se quedan en el cajón. Si solo ves lo publicado, el efecto combinado se ve <b>más grande</b> de lo real. El <b>funnel plot</b> (embudo) ayuda a sospecharlo: si es simétrico, bien; si le falta una esquina, quizá faltan estudios.</p>
+
+  <h2 class="sec">Autoevaluación</h2>
+  <details class="q"><summary>Dos meta-análisis con el mismo diamante (0.40), ¿dicen lo mismo?</summary>
+    <div class="ans"><span class="verd no">No necesariamente.</span> Hay que mirar la heterogeneidad: si los estudios no concuerdan, ese 0.40 es un promedio engañoso.</div></details>
+  <details class="q"><summary>Con alta heterogeneidad, ¿conviene efectos fijos o aleatorios?</summary>
+    <div class="ans"><span class="verd si">Aleatorios.</span> Reconoce que los estudios difieren y amplía el intervalo (más honesto).</div></details>
+  <details class="q"><summary>Un funnel plot asimétrico siempre prueba que hubo fraude. ¿Verdadero o falso?</summary>
+    <div class="ans"><span class="verd no">Falso.</span> Sugiere posible sesgo (p. ej. estudios sin publicar), no prueba fraude. Es una señal para investigar.</div></details>
+
+  <div class="prep">
+    <h2>Para la sesión en vivo</h2>
+    <p>Trae esto listo:</p>
+    <ol>
+      <li>En la herramienta: separa los estudios y di qué le pasó al intervalo al cambiar a aleatorios.</li>
+      <li>Explica con tus palabras qué es la heterogeneidad.</li>
+      <li>Una pregunta que le harías a un meta-análisis antes de creerle su diamante.</li>
+    </ol>
+  </div>
+
+  <div class="btnrow"><a href="leccion4.html">← Sesión 4</a><a href="index.html">Aula del curso →</a></div>
+  <p class="foot">Modelo simplificado con fines didácticos · datos sintéticos · no es evidencia real.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var studies=[{n:"Estudio A",d:0.42,w:80},{n:"Estudio B",d:0.25,w:120},{n:"Estudio C",d:0.60,w:60},{n:"Estudio D",d:0.33,w:90},{n:"Estudio E",d:0.48,w:100}];
+  var DMIN=-1,DMAX=1.5,COL="#4F46E5",TEAL="#0E9F8E",mode="fixed",SC=12.25;
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+  function el(t,a,x){var e=document.createElementNS("http://www.w3.org/2000/svg",t);for(var k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;return e;}
+  function varOf(s){return SC/s.w;}
+  function analyze(){
+    var k=studies.length, wf=studies.map(function(s){return 1/varOf(s);}), sw=wf.reduce(function(a,b){return a+b;},0);
+    var mf=studies.reduce(function(a,s,i){return a+wf[i]*s.d;},0)/sw;
+    var Q=studies.reduce(function(a,s,i){return a+wf[i]*Math.pow(s.d-mf,2);},0);
+    var I2=Math.max(0,(Q-(k-1))/Q)||0;
+    var tau2=0;
+    if(mode==="random"){ var Cc=sw-wf.reduce(function(a,w){return a+w*w;},0)/sw; tau2=Math.max(0,(Q-(k-1))/(Cc||1)); }
+    var w=studies.map(function(s){return 1/(varOf(s)+tau2);}), swr=w.reduce(function(a,b){return a+b;},0);
+    var d=studies.reduce(function(a,s,i){return a+w[i]*s.d;},0)/swr, se=Math.sqrt(1/swr);
+    return {d:d,lo:d-1.96*se,hi:d+1.96*se,I2:I2};
+  }
+  var svg=document.getElementById("forest");
+  function X(d){var L=120,R=560;return L+(d-DMIN)/(DMAX-DMIN)*(R-L);}
+  function draw(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    var ink=css("--ink"),mute=css("--mute"),bd=css("--border");
+    var rowH=36,top=14,k=studies.length,axisY=top+k*rowH+6;
+    svg.appendChild(el("line",{x1:X(0),y1:top-4,x2:X(0),y2:axisY,stroke:mute,"stroke-width":1,"stroke-dasharray":"4 3"}));
+    svg.appendChild(el("line",{x1:X(DMIN),y1:axisY,x2:X(DMAX),y2:axisY,stroke:bd,"stroke-width":1}));
+    [-0.5,0,0.5,1].forEach(function(t){svg.appendChild(el("text",{x:X(t),y:axisY+16,"text-anchor":"middle","font-size":11,fill:mute},""+t));});
+    var maxW=Math.max.apply(null,studies.map(function(s){return s.w;}));
+    studies.forEach(function(s,i){var y=top+i*rowH+rowH/2,se=Math.sqrt(varOf(s)),lo=s.d-1.96*se,hi=s.d+1.96*se;
+      svg.appendChild(el("text",{x:110,y:y+4,"text-anchor":"end","font-size":12,fill:ink},s.n));
+      svg.appendChild(el("line",{x1:X(lo),y1:y,x2:X(hi),y2:y,stroke:COL,"stroke-width":2.4,opacity:0.7,"stroke-linecap":"round"}));
+      var sz=7+11*Math.sqrt(s.w/maxW);
+      svg.appendChild(el("rect",{x:X(s.d)-sz/2,y:y-sz/2,width:sz,height:sz,rx:2,fill:COL}));});
+    var p=analyze(),dy=top+k*rowH-4;
+    svg.appendChild(el("polygon",{points:[[X(p.lo),dy],[X(p.d),dy-8],[X(p.hi),dy],[X(p.d),dy+8]].map(function(a){return a.join(",");}).join(" "),fill:TEAL}));
+    svg.appendChild(el("text",{x:110,y:dy+4,"text-anchor":"end","font-size":12,fill:TEAL,"font-weight":"bold"},"Combinado"));
+    document.getElementById("pooled").textContent=p.d.toFixed(2);
+    document.getElementById("ci").textContent="[ "+p.lo.toFixed(2)+", "+p.hi.toFixed(2)+" ]";
+    var het=document.getElementById("het"),lvl=p.I2<0.3?["baja","Heterogeneidad baja"]:p.I2<0.6?["media","Heterogeneidad media"]:["alta","Heterogeneidad alta"];
+    het.className="het "+lvl[0]; het.textContent=lvl[1]+" (I² ≈ "+Math.round(p.I2*100)+"%)";
+  }
+  var box=document.getElementById("ctrls");
+  studies.forEach(function(s,i){var d=document.createElement("div");d.className="ctl";
+    d.innerHTML='<label>'+s.n+'</label><input type="range" min="-1" max="1.5" step="0.01" value="'+s.d+'" data-i="'+i+'"><output>'+s.d.toFixed(2)+'</output>';box.appendChild(d);});
+  box.addEventListener("input",function(e){var t=e.target;if(t.dataset.i==null)return;studies[+t.dataset.i].d=+t.value;t.nextElementSibling.textContent=(+t.value).toFixed(2);draw();});
+  document.getElementById("seg").addEventListener("click",function(e){var b=e.target.closest("button[data-m]");if(!b)return;mode=b.dataset.m;[].forEach.call(this.querySelectorAll("button"),function(x){x.classList.toggle("on",x===b);});draw();});
+  if(window.matchMedia)window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",draw);
+  draw();
+})();
+</script>
+</body>
+</html>

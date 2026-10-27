@@ -8,8 +8,7 @@
   :root{
     --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
     --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
-    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD;
-    --tealL:#E4F6F3; --amberL:#FCF3DF;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF;
     color-scheme: light dark; box-sizing:border-box;
     padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
   }
@@ -26,7 +25,6 @@
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.45;}
   a{color:inherit; text-decoration:none;}
   .wrap{max-width:860px; margin:0 auto; padding:0 16px 70px;}
-
   .hero{background:var(--night); color:#fff; border-radius:0 0 20px 20px; padding:30px 22px 26px; margin:0 -16px 0;}
   .hero .kick{font-size:12px; font-weight:700; letter-spacing:1.6px; color:#AAB3D1; text-transform:uppercase;}
   .hero h1{font-size:30px; margin:6px 0 8px; line-height:1.1;}
@@ -34,13 +32,10 @@
   .chips{display:flex; flex-wrap:wrap; gap:8px;}
   .chips span{font-size:11.5px; font-weight:700; padding:4px 11px; border-radius:20px; background:rgba(255,255,255,.12); color:#E7ECF8;}
   .chips span.amber{background:var(--amber); color:#1E2A4A;}
-
   .now{display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--border);
     border-left:5px solid var(--amber); border-radius:12px; padding:14px 16px; margin:18px 0 6px;}
   .now .big{font-size:16px; font-weight:800;} .now .small{font-size:13px; color:var(--mute);}
-
   h2.sec{font-size:13px; font-weight:800; letter-spacing:1.2px; color:var(--mute); text-transform:uppercase; margin:26px 0 10px;}
-
   .ses{display:flex; gap:14px; background:var(--card); border:1px solid var(--border); border-radius:14px;
     padding:14px 16px; margin:10px 0; box-shadow:0 2px 10px rgba(80,90,130,.05); align-items:flex-start;}
   .ses .num{flex:none; width:40px; height:40px; border-radius:11px; background:var(--night); color:#fff;
@@ -58,17 +53,15 @@
   .st-futuro{background:transparent; color:var(--mute); border:1px solid var(--border);}
   .ses h3{font-size:16px; margin:7px 0 3px;}
   .ses .desc{font-size:13.5px; color:var(--mute); margin:0 0 8px;}
-  .toolbtn{display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:700;
-    background:var(--indigo); color:#fff; padding:8px 13px; border-radius:10px;}
-  .toolbtn.teal{background:var(--teal);} .toolbtn.gray{background:var(--card); color:var(--mute); border:1px solid var(--border);}
+  .lessonbtn{display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:700;
+    background:var(--indigo); color:#fff; padding:8px 14px; border-radius:10px;}
+  .lessonbtn:hover{opacity:.92;}
   .ses.active{border-color:var(--amber); box-shadow:0 2px 16px rgba(232,163,23,.18);}
-
   .tools{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px;}
   .tool{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; display:block;}
   .tool:hover{border-color:var(--indigo);}
   .tool .emoji{font-size:26px;} .tool h3{font-size:15.5px; margin:8px 0 3px;}
   .tool p{font-size:12.5px; color:var(--mute); margin:0;}
-
   .rules{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px;}
   .rules li{font-size:13.5px; margin:8px 0; color:var(--ink);} .rules b{color:var(--ink);}
   .rules .neq{color:var(--amber); font-weight:800;}
@@ -80,7 +73,7 @@
   <div class="hero">
     <div class="kick">Doctorado en Investigación Psicológica · IBERO · ITESO</div>
     <h1>Bibliometría y Meta-análisis</h1>
-    <p>El aula del curso: todo en un solo lugar. Elige tu rama y constrúyela, semana a semana, con el mismo ejemplo guía de sueño y memoria.</p>
+    <p>El aula del curso: todo en un solo lugar. Haz la lección de cada semana en casa y la discutimos en la sesión en vivo. Elige tu rama y constrúyela, semana a semana.</p>
     <div class="chips">
       <span class="amber">100% EN LÍNEA · ZOOM</span>
       <span>6 miércoles · 9:00–11:00</span>
@@ -89,23 +82,17 @@
   </div>
 
   <div class="now" id="now">
-    <div>
-      <div class="big" id="nowBig">—</div>
-      <div class="small" id="nowSmall"></div>
-    </div>
+    <div><div class="big" id="nowBig">—</div><div class="small" id="nowSmall"></div></div>
   </div>
 
-  <h2 class="sec">Las seis sesiones</h2>
+  <h2 class="sec">Las seis sesiones · haz la lección antes de cada clase</h2>
   <div id="sessions"></div>
 
   <h2 class="sec">Herramientas interactivas</h2>
   <div class="tools">
-    <a class="tool" href="primera_grafica.html" target="_blank" rel="noopener">
-      <div class="emoji">📊</div><h3>Construye tu primera gráfica</h3><p>Sesión 1 · cuenta las fichas y mira crecer la barra.</p></a>
-    <a class="tool" href="juego_de_corpus.html" target="_blank" rel="noopener">
-      <div class="emoji">🗂️</div><h3>Juego de corpus</h3><p>Sesión 2 · decide qué fichas entran: incluir / excluir / incierto.</p></a>
-    <a class="tool" href="balanza.html" target="_blank" rel="noopener">
-      <div class="emoji">⚖️</div><h3>La balanza del meta-análisis</h3><p>Sesiones 4–5 · combina estudios y lee el forest plot.</p></a>
+    <a class="tool" href="primera_grafica.html"><div class="emoji">📊</div><h3>Construye tu primera gráfica</h3><p>Sesión 1 · cuenta las fichas y mira crecer la barra.</p></a>
+    <a class="tool" href="juego_de_corpus.html"><div class="emoji">🗂️</div><h3>Juego de corpus</h3><p>Sesión 2 · decide qué fichas entran: incluir / excluir / incierto.</p></a>
+    <a class="tool" href="balanza.html"><div class="emoji">⚖️</div><h3>La balanza del meta-análisis</h3><p>Sesiones 4–5 · combina estudios y lee el forest plot.</p></a>
   </div>
 
   <h2 class="sec">Las reglas de oro del curso</h2>
@@ -126,53 +113,36 @@
 (function(){
   "use strict";
   var ses=[
-    {n:1,d:"2026-10-21",lbl:"21 oct",rama:["Común","comun"],title:"Panorama: el mapa y la balanza",desc:"Qué es bibliometría y meta-análisis; elige tu rama y tu pregunta.",tool:{t:"Construye tu primera gráfica",u:"primera_grafica.html",c:""}},
-    {n:2,d:"2026-10-28",lbl:"28 oct",rama:["Común","comun"],title:"Del resultado al corpus",desc:"Decide qué publicaciones entran y limpia sus metadatos.",tool:{t:"Juego de corpus",u:"juego_de_corpus.html",c:""}},
-    {n:3,d:"2026-11-04",lbl:"4 nov",rama:["Bibliometría","biblio"],title:"Descriptivos y redes",desc:"Tablas, gráficas y un mapa de temas.",tool:null},
-    {n:4,d:"2026-11-11",lbl:"11 nov",rama:["Meta-análisis","meta"],title:"Tamaños de efecto · forest plot",desc:"De los estudios a los números; leer la balanza.",tool:{t:"La balanza",u:"balanza.html",c:"teal"}},
-    {n:5,d:"2026-11-18",lbl:"18 nov",rama:["Meta-análisis","meta"],title:"Combinar · heterogeneidad · sesgo",desc:"Juntar estudios y leer sus límites.",tool:{t:"La balanza",u:"balanza.html",c:"teal"}},
-    {n:6,d:"2026-12-02",lbl:"2 dic",rama:["Común","comun"],title:"Reproducibilidad e informe",desc:"Cerrar tu expediente y presentarlo.",tool:null}
+    {n:1,d:"2026-10-21",lbl:"21 oct",rama:["Común","comun"],title:"Panorama: el mapa y la balanza",desc:"Qué es bibliometría y meta-análisis; elige tu rama y tu pregunta.",lesson:"leccion1.html"},
+    {n:2,d:"2026-10-28",lbl:"28 oct",rama:["Común","comun"],title:"Del resultado al corpus",desc:"Decide qué publicaciones entran y limpia sus metadatos.",lesson:"leccion2.html"},
+    {n:3,d:"2026-11-04",lbl:"4 nov",rama:["Bibliometría","biblio"],title:"Descriptivos y redes",desc:"Tablas, gráficas y un mapa de temas (con la red interactiva).",lesson:"leccion3.html"},
+    {n:4,d:"2026-11-11",lbl:"11 nov",rama:["Meta-análisis","meta"],title:"Tamaños de efecto · forest plot",desc:"De los estudios a los números; leer la balanza.",lesson:"leccion4.html"},
+    {n:5,d:"2026-11-18",lbl:"18 nov",rama:["Meta-análisis","meta"],title:"Combinar · heterogeneidad · sesgo",desc:"Juntar estudios y leer sus límites.",lesson:"leccion5.html"},
+    {n:6,d:"2026-12-02",lbl:"2 dic",rama:["Común","comun"],title:"Reproducibilidad e informe",desc:"Cerrar tu expediente y presentarlo.",lesson:"leccion6.html"}
   ];
   function dayStart(d){var x=new Date(d);x.setHours(0,0,0,0);return x;}
-  var today=dayStart(new Date());
-  // find next (first with date >= today)
-  var nextIdx=-1;
-  for(var i=0;i<ses.length;i++){ if(dayStart(ses[i].d)>=today){ nextIdx=i; break; } }
+  var today=dayStart(new Date()),nextIdx=-1;
+  for(var i=0;i<ses.length;i++){if(dayStart(ses[i].d)>=today){nextIdx=i;break;}}
   var box=document.getElementById("sessions");
   ses.forEach(function(s,i){
-    var sd=dayStart(s.d);
-    var status, stClass, active=false;
-    if(sd.getTime()===today.getTime()){ status="HOY"; stClass="st-prox"; active=true; }
-    else if(sd<today){ status="vista"; stClass="st-vista"; }
-    else if(i===nextIdx){ status="próxima"; stClass="st-prox"; active=true; }
-    else { status="por venir"; stClass="st-futuro"; }
-    var tool = s.tool
-      ? '<a class="toolbtn '+(s.tool.c||'')+'" href="'+s.tool.u+'" target="_blank" rel="noopener">▶  '+s.tool.t+'</a>'
-      : '<span class="toolbtn gray">Herramienta próximamente</span>';
-    var div=document.createElement("div");
-    div.className="ses"+(active?" active":"");
-    div.innerHTML=
-      '<div class="num">'+s.n+'</div>'+
-      '<div class="body">'+
-        '<div class="top"><span class="date">'+s.lbl+'</span>'+
-          '<span class="rama '+s.rama[1]+'">'+s.rama[0]+'</span>'+
-          '<span class="status '+stClass+'">'+status+'</span></div>'+
-        '<h3>'+s.title+'</h3><p class="desc">'+s.desc+'</p>'+ tool +
-      '</div>';
+    var sd=dayStart(s.d),status,stClass,active=false;
+    if(sd.getTime()===today.getTime()){status="HOY";stClass="st-prox";active=true;}
+    else if(sd<today){status="vista";stClass="st-vista";}
+    else if(i===nextIdx){status="próxima";stClass="st-prox";active=true;}
+    else{status="por venir";stClass="st-futuro";}
+    var div=document.createElement("div");div.className="ses"+(active?" active":"");
+    div.innerHTML='<div class="num">'+s.n+'</div><div class="body">'+
+      '<div class="top"><span class="date">'+s.lbl+'</span><span class="rama '+s.rama[1]+'">'+s.rama[0]+'</span>'+
+      '<span class="status '+stClass+'">'+status+'</span></div>'+
+      '<h3>'+s.title+'</h3><p class="desc">'+s.desc+'</p>'+
+      '<a class="lessonbtn" href="'+s.lesson+'">📖  Abrir lección</a></div>';
     box.appendChild(div);
   });
-  // "now" banner
-  var big=document.getElementById("nowBig"), small=document.getElementById("nowSmall");
-  if(nextIdx===-1){ big.textContent="El curso ha concluido 🎓"; small.textContent="Gracias por participar."; }
-  else {
-    var s=ses[nextIdx], sd=dayStart(s.d);
-    if(sd.getTime()===today.getTime()){ big.textContent="Hoy: Sesión "+s.n+" — "+s.title; small.textContent=s.lbl+" · 9:00–11:00"; }
-    else {
-      var days=Math.round((sd-today)/86400000);
-      big.textContent="Próxima: Sesión "+s.n+" — "+s.title;
-      small.textContent=s.lbl+" · en "+days+(days===1?" día":" días");
-    }
-  }
+  var big=document.getElementById("nowBig"),small=document.getElementById("nowSmall");
+  if(nextIdx===-1){big.textContent="El curso ha concluido 🎓";small.textContent="Gracias por participar.";}
+  else{var s=ses[nextIdx],sd=dayStart(s.d);
+    if(sd.getTime()===today.getTime()){big.textContent="Hoy: Sesión "+s.n+" — "+s.title;small.textContent=s.lbl+" · 9:00–11:00";}
+    else{var days=Math.round((sd-today)/86400000);big.textContent="Próxima: Sesión "+s.n+" — "+s.title;small.textContent=s.lbl+" · en "+days+(days===1?" día":" días")+" · haz la lección antes";}}
 })();
 </script>
 </body>
