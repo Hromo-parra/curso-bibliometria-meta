@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>La balanza del meta-análisis</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD; --softteal:#E4F6F3;
+    color-scheme: light dark;
+    box-sizing:border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740;
+      --border:#303C5C; --soft:#272F4D; --softteal:#193A38; --night:#0E1424;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740;
+    --border:#303C5C; --soft:#272F4D; --softteal:#193A38; --night:#0E1424;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    line-height:1.45; -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:780px; margin:0 auto; padding:20px 16px 60px;}
+  header.top{margin-bottom:14px;}
+  .kick{font-size:12px; font-weight:700; letter-spacing:1.5px; color:var(--teal); text-transform:uppercase;}
+  h1{font-size:26px; margin:4px 0 6px; line-height:1.15;}
+  .sub{color:var(--mute); font-size:15px; margin:0;}
+  .tag{display:inline-block; margin-top:8px; font-size:11px; font-weight:700; color:var(--night);
+       background:var(--amber); padding:3px 10px; border-radius:20px;}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tag{color:#1E2A4A;}}
+
+  .card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin:14px 0;
+        box-shadow:0 2px 10px rgba(80,90,130,.06);}
+  .plot-wrap{overflow-x:auto;}
+  svg{width:100%; height:auto; display:block; min-width:300px;}
+
+  .result{display:flex; flex-wrap:wrap; align-items:center; gap:14px; justify-content:space-between;}
+  .result .big{font-size:30px; font-weight:800; color:var(--teal);}
+  .result .label{font-size:15px;}
+  .pill{display:inline-block; font-size:12px; font-weight:700; padding:3px 11px; border-radius:20px;
+        background:var(--softteal); color:var(--teal);}
+
+  .controls h2, .modebox h2{font-size:15px; margin:0 0 10px; color:var(--ink);}
+  .study{border-top:1px solid var(--border); padding:12px 0;}
+  .study:first-of-type{border-top:none;}
+  .study .srow{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .dot{width:12px; height:12px; border-radius:3px; flex:none;}
+  .study .name{font-weight:700; font-size:14px;}
+  .study .rm{margin-left:auto; border:none; background:transparent; color:var(--mute);
+             font-size:18px; cursor:pointer; padding:0 6px; line-height:1;}
+  .ctl{display:grid; grid-template-columns:118px 1fr 54px; align-items:center; gap:10px; margin:6px 0; font-size:13px;}
+  .ctl label{color:var(--mute);}
+  .ctl output{font-variant-numeric:tabular-nums; font-weight:700; text-align:right; color:var(--ink);}
+  input[type=range]{width:100%; accent-color:var(--indigo);}
+  input[type=range].teal{accent-color:var(--teal);}
+
+  .btns{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;}
+  button.act{border:1px solid var(--border); background:var(--card); color:var(--ink);
+             padding:9px 14px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;}
+  button.act:hover{border-color:var(--indigo);}
+  button.primary{background:var(--indigo); color:#fff; border-color:var(--indigo);}
+
+  .modebox .seg{display:flex; gap:8px;}
+  .seg button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border);
+              background:var(--card); color:var(--ink); font-weight:600; font-size:14px; cursor:pointer;}
+  .seg button.on{border-color:var(--teal); background:var(--softteal); color:var(--teal);}
+  .modebox .expl{font-size:13px; color:var(--mute); margin-top:10px;}
+
+  details{margin-top:6px;} summary{cursor:pointer; font-weight:600; font-size:14px; color:var(--indigo);}
+  details p{font-size:13.5px; color:var(--ink);} 
+  code{background:var(--soft); padding:2px 6px; border-radius:6px; font-size:13px;}
+  .foot{font-size:12px; color:var(--mute); text-align:center; margin-top:18px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="kick">Meta-análisis · explóralo</div>
+    <h1>La balanza: combina varios estudios</h1>
+    <p class="sub">Mueve los deslizadores y observa cómo cambia el resultado combinado (el diamante). Sin fórmulas y sin instalar nada.</p>
+    <span class="tag">EJEMPLO SINTÉTICO · datos didácticos</span>
+  </header>
+
+  <div class="card">
+    <div class="plot-wrap"><svg id="forest" viewBox="0 0 720 360" role="img" aria-label="Forest plot interactivo"></svg></div>
+  </div>
+
+  <div class="card result">
+    <div>
+      <div class="label" style="color:var(--mute);font-size:13px;font-weight:700;">EFECTO COMBINADO</div>
+      <div class="big"><span id="pooled">0.42</span> <span style="font-size:15px;color:var(--mute);font-weight:600;">[<span id="ci">0.28, 0.56</span>]</span></div>
+    </div>
+    <div style="text-align:right;max-width:340px;">
+      <span class="pill" id="sizePill">moderado</span>
+      <div class="label" id="sentence" style="margin-top:6px;color:var(--ink);"></div>
+    </div>
+  </div>
+
+  <div class="card modebox">
+    <h2>¿Cómo pesamos los estudios?</h2>
+    <div class="seg" id="modeSeg">
+      <button data-mode="fixed" class="on">Efectos fijos</button>
+      <button data-mode="random">Efectos aleatorios</button>
+    </div>
+    <div class="expl" id="modeExpl"></div>
+  </div>
+
+  <div class="card controls">
+    <h2>Los estudios <span style="color:var(--mute);font-weight:400;font-size:13px;">— efecto y tamaño de muestra</span></h2>
+    <div id="studies"></div>
+    <div class="btns">
+      <button class="act primary" id="add">+ Añadir estudio</button>
+      <button class="act" id="reset">Reiniciar</button>
+    </div>
+  </div>
+
+  <details class="card">
+    <summary>¿Qué estoy viendo? (explicación en 20 segundos)</summary>
+    <p>Cada <b>cuadro</b> es un estudio: su posición es el <b>tamaño del efecto</b> (qué tan grande es el resultado) y su <b>barra</b> es la incertidumbre (más corta = más seguro). El cuadro es más grande cuando el estudio tiene más participantes, porque pesa más.</p>
+    <p>El <b>diamante</b> verde combina todos los estudios en una sola respuesta. La línea vertical en <code>0</code> es «sin efecto»: si el diamante está a la derecha, el efecto va a favor; si cruza el 0, no podemos afirmarlo con seguridad.</p>
+    <p>Escala rápida (orientativa): cerca de <code>0.2</code> es un efecto pequeño, <code>0.5</code> moderado y <code>0.8</code> grande.</p>
+  </details>
+
+  <p class="foot">Modelo simplificado con fines didácticos. No sustituye un meta-análisis real.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var COLORS=["#4F46E5","#D6485A","#E8A317","#0E9F8E","#7C3AED","#0EA5E9","#DB2777"];
+  var DMIN=-1, DMAX=1.5;
+  var defaults=[
+    {name:"Estudio A", d:0.42, n:80},
+    {name:"Estudio B", d:0.25, n:120},
+    {name:"Estudio C", d:0.60, n:60},
+    {name:"Estudio D", d:0.33, n:90},
+    {name:"Estudio E", d:0.48, n:100}
+  ];
+  var studies = clone(defaults);
+  var mode = "fixed";
+  var nextLetter = 5;
+
+  function clone(a){return a.map(function(s){return {name:s.name,d:s.d,n:s.n};});}
+  function varOf(s){ return 1/s.n; }               // SE = 1/sqrt(n)  (didáctico)
+
+  function pool(){
+    var k=studies.length;
+    if(k===0) return null;
+    var tau2=0;
+    if(mode==="random" && k>1){
+      // varianza entre estudios (simplificada, estilo DerSimonian–Laird)
+      var wf=studies.map(function(s){return 1/varOf(s);});
+      var sw=sum(wf), sw2=sum(wf.map(function(w){return w*w;}));
+      var mf=sum(studies.map(function(s,i){return wf[i]*s.d;}))/sw;
+      var Q=sum(studies.map(function(s,i){return wf[i]*Math.pow(s.d-mf,2);}));
+      var C=sw - sw2/sw;
+      tau2=Math.max(0,(Q-(k-1))/(C||1));
+    }
+    var w=studies.map(function(s){return 1/(varOf(s)+tau2);});
+    var sw=sum(w);
+    var d=sum(studies.map(function(s,i){return w[i]*s.d;}))/sw;
+    var se=Math.sqrt(1/sw);
+    return {d:d, lo:d-1.96*se, hi:d+1.96*se, w:w};
+  }
+  function sum(a){return a.reduce(function(x,y){return x+y;},0);}
+
+  var svg=document.getElementById("forest");
+  function X(d){ var L=150,R=600; return L+(d-DMIN)/(DMAX-DMIN)*(R-L); }
+  function el(tag,attrs,txt){
+    var e=document.createElementNS("http://www.w3.org/2000/svg",tag);
+    for(var k in attrs) e.setAttribute(k,attrs[k]);
+    if(txt!=null) e.textContent=txt;
+    return e;
+  }
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+
+  function draw(){
+    var p=pool();
+    var rowH=42, top=16, k=studies.length;
+    var H=top + k*rowH + 70;
+    svg.setAttribute("viewBox","0 0 720 "+H);
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    var axisY=top + k*rowH + 10;
+    var ink=css("--ink"), mute=css("--mute"), border=css("--border"), teal=css("--teal");
+
+    // vertical zero line
+    svg.appendChild(el("line",{x1:X(0),y1:top-4,x2:X(0),y2:axisY,stroke:mute,"stroke-width":1,"stroke-dasharray":"4 3"}));
+
+    // axis
+    svg.appendChild(el("line",{x1:X(DMIN),y1:axisY,x2:X(DMAX),y2:axisY,stroke:border,"stroke-width":1}));
+    [-1,-0.5,0,0.5,1,1.5].forEach(function(t){
+      svg.appendChild(el("line",{x1:X(t),y1:axisY,x2:X(t),y2:axisY+5,stroke:mute,"stroke-width":1}));
+      svg.appendChild(el("text",{x:X(t),y:axisY+18,"text-anchor":"middle","font-size":11,fill:mute},String(t)));
+    });
+    svg.appendChild(el("text",{x:X(0.5),y:axisY+36,"text-anchor":"middle","font-size":11,fill:mute},"tamaño de efecto (d)  →  a favor"));
+
+    // studies
+    var maxN=Math.max.apply(null,studies.map(function(s){return s.n;}));
+    studies.forEach(function(s,i){
+      var y=top + i*rowH + rowH/2;
+      var c=COLORS[i%COLORS.length];
+      var se=Math.sqrt(varOf(s)), lo=s.d-1.96*se, hi=s.d+1.96*se;
+      svg.appendChild(el("text",{x:140,y:y+4,"text-anchor":"end","font-size":13,fill:ink,"font-weight":600},s.name));
+      svg.appendChild(el("line",{x1:X(lo),y1:y,x2:X(hi),y2:y,stroke:c,"stroke-width":2.5,"stroke-linecap":"round",opacity:0.75}));
+      var sz=7+13*Math.sqrt(s.n/maxN);
+      svg.appendChild(el("rect",{x:X(s.d)-sz/2,y:y-sz/2,width:sz,height:sz,rx:2,fill:c}));
+      svg.appendChild(el("text",{x:610,y:y+4,"font-size":11,fill:mute},s.d.toFixed(2)));
+    });
+
+    // diamond
+    if(p){
+      var dy=top + k*rowH - 6;
+      var pts=[[X(p.lo),dy],[X(p.d),dy-9],[X(p.hi),dy],[X(p.d),dy+9]].map(function(a){return a.join(",");}).join(" ");
+      svg.appendChild(el("polygon",{points:pts,fill:teal}));
+      svg.appendChild(el("text",{x:140,y:dy+4,"text-anchor":"end","font-size":13,fill:teal,"font-weight":700},"Combinado"));
+    }
+  }
+
+  function updateReadout(){
+    var p=pool();
+    if(!p){document.getElementById("sentence").textContent="Añade al menos un estudio."; return;}
+    document.getElementById("pooled").textContent=p.d.toFixed(2);
+    document.getElementById("ci").textContent=p.lo.toFixed(2)+", "+p.hi.toFixed(2);
+    var a=Math.abs(p.d), lab = a<0.2?"muy pequeño": a<0.5?"pequeño": a<0.8?"moderado":"grande";
+    document.getElementById("sizePill").textContent=lab;
+    var crosses = p.lo<=0 && p.hi>=0;
+    var dir = p.d>=0 ? "a favor de dormir" : "en contra";
+    var s;
+    if(crosses){ s="El intervalo cruza el 0: con estos datos no podemos afirmar el efecto con seguridad."; }
+    else { s="El efecto combinado es "+lab+" y "+dir+"."; }
+    document.getElementById("sentence").textContent=s;
+  }
+
+  function renderControls(){
+    var box=document.getElementById("studies"); box.innerHTML="";
+    studies.forEach(function(s,i){
+      var c=COLORS[i%COLORS.length];
+      var div=document.createElement("div"); div.className="study";
+      div.innerHTML =
+        '<div class="srow"><span class="dot" style="background:'+c+'"></span>'+
+        '<span class="name">'+s.name+'</span>'+
+        '<button class="rm" title="Quitar" data-rm="'+i+'">×</button></div>'+
+        '<div class="ctl"><label>Efecto (d)</label>'+
+          '<input type="range" min="-1" max="1.5" step="0.01" value="'+s.d+'" data-d="'+i+'">'+
+          '<output>'+s.d.toFixed(2)+'</output></div>'+
+        '<div class="ctl"><label>Participantes</label>'+
+          '<input type="range" class="teal" min="20" max="200" step="5" value="'+s.n+'" data-n="'+i+'">'+
+          '<output>'+s.n+'</output></div>';
+      box.appendChild(div);
+    });
+  }
+
+  function refresh(){ draw(); updateReadout(); }
+
+  // events
+  document.getElementById("studies").addEventListener("input",function(e){
+    var t=e.target, i;
+    if(t.dataset.d!=null){ i=+t.dataset.d; studies[i].d=+t.value; t.nextElementSibling.textContent=(+t.value).toFixed(2); refresh(); }
+    if(t.dataset.n!=null){ i=+t.dataset.n; studies[i].n=+t.value; t.nextElementSibling.textContent=t.value; refresh(); }
+  });
+  document.getElementById("studies").addEventListener("click",function(e){
+    if(e.target.dataset.rm!=null && studies.length>1){ studies.splice(+e.target.dataset.rm,1); renderControls(); refresh(); }
+  });
+  document.getElementById("add").addEventListener("click",function(){
+    if(studies.length>=7) return;
+    var letter=String.fromCharCode(65+nextLetter); nextLetter++;
+    studies.push({name:"Estudio "+letter, d:0.35, n:80}); renderControls(); refresh();
+  });
+  document.getElementById("reset").addEventListener("click",function(){
+    studies=clone(defaults); nextLetter=5; renderControls(); refresh();
+  });
+  var expl={
+    fixed:"Efectos fijos: suponemos que todos los estudios miden exactamente lo mismo; los grandes pesan mucho más.",
+    random:"Efectos aleatorios: aceptamos que cada estudio mide algo un poco distinto; los pesos se reparten de forma más pareja y el intervalo suele ampliarse."
+  };
+  document.getElementById("modeSeg").addEventListener("click",function(e){
+    var b=e.target.closest("button[data-mode]"); if(!b) return;
+    mode=b.dataset.mode;
+    [].forEach.call(this.querySelectorAll("button"),function(x){x.classList.toggle("on",x===b);});
+    document.getElementById("modeExpl").textContent=expl[mode];
+    refresh();
+  });
+
+  document.getElementById("modeExpl").textContent=expl.fixed;
+  renderControls(); refresh();
+  // redraw on theme change
+  if(window.matchMedia){ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",refresh); }
+})();
+</script>
+</body>
+</html>

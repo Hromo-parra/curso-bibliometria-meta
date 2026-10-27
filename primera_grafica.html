@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Construye tu primera gráfica</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD;
+    --tealL:#E4F6F3; --amberL:#FCF3DF;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115;
+  }}
+  :root[data-theme="dark"]{
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.45;}
+  .wrap{max-width:820px; margin:0 auto; padding:20px 16px 70px;}
+  .kick{font-size:12px; font-weight:700; letter-spacing:1.5px; color:var(--indigo); text-transform:uppercase;}
+  h1{font-size:26px; margin:4px 0 6px; line-height:1.15;}
+  .sub{color:var(--mute); font-size:15px; margin:0;}
+  .tag{display:inline-block; margin-top:8px; font-size:11px; font-weight:700; color:var(--night);
+       background:var(--amber); padding:3px 10px; border-radius:20px;}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tag{color:#1E2A4A;}}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin:14px 0;
+    box-shadow:0 2px 10px rgba(80,90,130,.06);}
+
+  .seg{display:flex; gap:8px; margin-bottom:12px;}
+  .seg button{flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border);
+    background:var(--card); color:var(--ink); font-weight:700; font-size:14px; cursor:pointer;}
+  .seg button.on{border-color:var(--indigo); background:var(--soft); color:var(--indigo);}
+
+  svg{width:100%; height:auto; display:block;}
+  .counter{font-size:13px; color:var(--mute); font-weight:700; text-align:center; margin-top:4px;}
+
+  .fgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:10px;}
+  .ficha{border:1.5px solid var(--border); border-radius:12px; padding:11px 12px; cursor:pointer;
+    background:var(--card); transition:.12s; position:relative; user-select:none;}
+  .ficha:hover{border-color:var(--mute);}
+  .ficha.on{border-color:var(--teal); background:var(--tealL);}
+  .fh{display:flex; align-items:center; gap:7px; margin-bottom:5px;}
+  .fid{background:var(--night); color:#fff; font-size:10.5px; font-weight:700; border-radius:5px; padding:2px 7px;}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fid{background:#3A4668;}}
+  .ftype{font-size:10px; font-weight:700; padding:2px 7px; border-radius:20px; background:var(--soft); color:var(--mute);}
+  .fyear{margin-left:auto; font-weight:800; color:var(--indigo); font-size:14px;}
+  .ftitle{font-size:12.5px; color:var(--ink); line-height:1.25;}
+  .check{position:absolute; top:9px; right:9px; width:18px; height:18px; border-radius:50%;
+    background:var(--teal); color:#fff; font-size:12px; display:none; align-items:center; justify-content:center;}
+  .ficha.on .check{display:flex;} .ficha.on .fyear{visibility:hidden;}
+
+  .btns{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
+  button.act{border:1px solid var(--border); background:var(--card); color:var(--ink);
+    padding:10px 15px; border-radius:11px; font-weight:700; font-size:13.5px; cursor:pointer;}
+  button.primary{background:var(--indigo); color:#fff; border-color:var(--indigo);}
+
+  .note{display:none; margin-top:12px; padding:12px 14px; border-radius:11px; background:var(--amberL); font-size:13.5px;}
+  .note.show{display:block;} .note b{color:var(--ink);}
+  .foot{font-size:12px; color:var(--mute); text-align:center; margin-top:18px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kick">Sesión 1 · tu primer análisis</div>
+    <h1>Construye tu primera gráfica</h1>
+    <p class="sub">Toca cada ficha para contarla y mira crecer la barra. Así se hace bibliometría: de unas fichas a un resultado.</p>
+    <span class="tag">EJEMPLO SINTÉTICO · datos didácticos</span>
+  </header>
+
+  <div class="card">
+    <div class="seg" id="seg">
+      <button data-g="year" class="on">Agrupar por año</button>
+      <button data-g="type">Agrupar por tipo</button>
+    </div>
+    <svg id="chart" viewBox="0 0 720 340" role="img" aria-label="Gráfica de barras"></svg>
+    <div class="counter" id="counter">Contadas: 0 de 6</div>
+  </div>
+
+  <div class="card">
+    <p class="sub" style="color:var(--ink);font-weight:700;margin-bottom:10px;">Las 6 fichas — toca para contar</p>
+    <div class="fgrid" id="fichas"></div>
+    <div class="btns">
+      <button class="act primary" id="all">Contar todas</button>
+      <button class="act" id="reset">Reiniciar</button>
+    </div>
+    <div class="note" id="note"></div>
+  </div>
+
+  <p class="foot">Pregunta → fichas → tabla → conteo → gráfica. Un estudio completo en miniatura.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var fichas=[
+    {id:"A1",year:"2020",type:"artículo",title:"Sueño REM y consolidación de la memoria"},
+    {id:"A2",year:"2021",type:"artículo",title:"Siestas y retención de listas de palabras"},
+    {id:"A3",year:"2022",type:"artículo",title:"Privación de sueño y memoria de trabajo"},
+    {id:"A4",year:"2022",type:"revisión",title:"Revisión: sueño y memoria episódica"},
+    {id:"A5",year:"2024",type:"artículo",title:"Sueño de ondas lentas y memoria espacial"},
+    {id:"A6",year:"2024",type:"editorial",title:"Editorial: hacia dónde va sueño–memoria"}
+  ];
+  var cats={ year:["2020","2021","2022","2023","2024"], type:["artículo","revisión","editorial"] };
+  var colors={ year:"#4F46E5", type:"#0E9F8E" };
+  var counted={}; var group="year";
+
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+  function el(tag,a,txt){var e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(var k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;}
+
+  function counts(){
+    var c={}; cats[group].forEach(function(k){c[k]=0;});
+    fichas.forEach(function(f){ if(counted[f.id]) c[f[group]]++; });
+    return c;
+  }
+  function draw(){
+    var svg=document.getElementById("chart");
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    var ks=cats[group], c=counts();
+    var W=720,H=340, L=46,R=20,T=24,B=54;
+    var maxTotal = group==="year"?2:4;
+    var plotH=H-T-B, plotW=W-L-R;
+    var ink=css("--ink"),mute=css("--mute"),border=css("--border"),col=colors[group];
+    // y gridlines/ticks
+    for(var v=0;v<=maxTotal;v++){
+      var y=T+plotH-(v/maxTotal)*plotH;
+      svg.appendChild(el("line",{x1:L,y1:y,x2:W-R,y2:y,stroke:border,"stroke-width":1,opacity:v===0?1:.6}));
+      svg.appendChild(el("text",{x:L-8,y:y+4,"text-anchor":"end","font-size":12,fill:mute},String(v)));
+    }
+    var n=ks.length, slot=plotW/n, bw=Math.min(78,slot*0.56);
+    ks.forEach(function(k,i){
+      var cx=L+slot*(i+0.5);
+      var val=c[k];
+      var h=(val/maxTotal)*plotH;
+      var y=T+plotH-h;
+      // empty outline for zero
+      if(val===0){
+        svg.appendChild(el("rect",{x:cx-bw/2,y:T+plotH-2,width:bw,height:2,rx:1,fill:mute,opacity:.35}));
+      }else{
+        svg.appendChild(el("rect",{x:cx-bw/2,y:y,width:bw,height:h,rx:4,fill:col}));
+      }
+      svg.appendChild(el("text",{x:cx,y:(val===0?T+plotH-8:y-7),"text-anchor":"middle","font-size":13,fill:(val===0?mute:ink),"font-weight":"bold"},String(val)));
+      svg.appendChild(el("text",{x:cx,y:H-32,"text-anchor":"middle","font-size":12.5,fill:ink},k));
+    });
+    svg.appendChild(el("text",{x:L+plotW/2,y:H-10,"text-anchor":"middle","font-size":11.5,fill:mute},
+      group==="year"?"publicaciones por año":"publicaciones por tipo documental"));
+    // counter + note
+    var total=fichas.filter(function(f){return counted[f.id];}).length;
+    document.getElementById("counter").textContent="Contadas: "+total+" de 6";
+    var note=document.getElementById("note");
+    if(total===6){
+      note.classList.add("show");
+      note.innerHTML = group==="year"
+        ? '<b>¡Lista tu primera gráfica!</b> Fíjate en 2023: la barra es 0. Eso significa «cero publicaciones observadas en estas 6 fichas» — no que nadie haya investigado. <b>Cero observado ≠ desconocido.</b>'
+        : '<b>Mismo conjunto, otra pregunta.</b> Con las mismas 6 fichas respondiste por año y por tipo. Esa es la gracia de la bibliometría: una colección responde varias preguntas.';
+    } else { note.classList.remove("show"); }
+  }
+  function renderFichas(){
+    var box=document.getElementById("fichas"); box.innerHTML="";
+    fichas.forEach(function(f){
+      var d=document.createElement("div");
+      d.className="ficha"+(counted[f.id]?" on":""); d.dataset.id=f.id;
+      d.innerHTML='<div class="check">\u2713</div>'+
+        '<div class="fh"><span class="fid">'+f.id+'</span><span class="ftype">'+f.type+'</span>'+
+        '<span class="fyear">'+f.year+'</span></div>'+
+        '<div class="ftitle">'+f.title+'</div>';
+      box.appendChild(d);
+    });
+  }
+  document.getElementById("fichas").addEventListener("click",function(e){
+    var d=e.target.closest(".ficha"); if(!d) return;
+    var id=d.dataset.id; counted[id]=!counted[id]; d.classList.toggle("on",counted[id]); draw();
+  });
+  document.getElementById("seg").addEventListener("click",function(e){
+    var b=e.target.closest("button[data-g]"); if(!b) return;
+    group=b.dataset.g;
+    [].forEach.call(this.querySelectorAll("button"),function(x){x.classList.toggle("on",x===b);});
+    draw();
+  });
+  document.getElementById("all").addEventListener("click",function(){
+    fichas.forEach(function(f){counted[f.id]=true;}); renderFichas(); draw();
+  });
+  document.getElementById("reset").addEventListener("click",function(){
+    counted={}; renderFichas(); draw();
+  });
+  if(window.matchMedia){ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",draw); }
+  renderFichas(); draw();
+})();
+</script>
+</body>
+</html>
