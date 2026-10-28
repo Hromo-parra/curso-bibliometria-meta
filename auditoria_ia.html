@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Audita a la IA · Laboratorio cerebelo y epilepsia</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E7F72; --amber:#A86F00; --coral:#C23A4C; --plum:#7A3E9D;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#5E6678; --bg:#F6F7FB; --card:#FFFFFF;
+    --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF; --coralL:#FBE9EB; --plumL:#F3EAF8;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --indigo:#8B85FF; --teal:#3CC9B5; --amber:#F0B640; --coral:#F07484; --plum:#C69BE3;
+    --ink:#EAECF4; --mute:#A3ABC4; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23; --plumL:#2E2240;
+  }}
+  :root[data-theme="dark"]{
+    --indigo:#8B85FF; --teal:#3CC9B5; --amber:#F0B640; --coral:#F07484; --plum:#C69BE3;
+    --ink:#EAECF4; --mute:#A3ABC4; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23; --plumL:#2E2240;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.55;}
+  a{color:var(--indigo);}
+  :focus-visible{outline:3px solid var(--amber); outline-offset:2px;}
+  .wrap{max-width:800px; margin:0 auto; padding:0 18px 70px;}
+  .nav{display:flex; justify-content:space-between; gap:12px; padding:14px 0; font-size:13.5px;}
+  .nav a{font-weight:700; text-decoration:none;}
+  h1{font-size:clamp(25px,3.6vw,34px); line-height:1.12; margin:6px 0 10px; letter-spacing:-.01em;}
+  h2{font-size:21px; margin:34px 0 8px;}
+  .intro{color:var(--mute); font-size:15.5px; margin:0 0 10px; max-width:68ch;}
+
+  .scale{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0;}
+  @media(max-width:700px){.scale{grid-template-columns:1fr 1fr;}}
+  .scale div{border-radius:10px; padding:11px 12px; border-top:4px solid; background:var(--card); border-left:1px solid var(--border); border-right:1px solid var(--border); border-bottom:1px solid var(--border);}
+  .scale b{display:block; font-size:15px; margin-bottom:3px;}
+  .scale span{font-size:13px; color:var(--mute);}
+  .k-res{border-top-color:var(--teal)!important;} .k-res b{color:var(--teal);}
+  .k-pla{border-top-color:var(--plum)!important;} .k-pla b{color:var(--plum);}
+  .k-nod{border-top-color:var(--amber)!important;} .k-nod b{color:var(--amber);}
+  .k-inc{border-top-color:var(--coral)!important;} .k-inc b{color:var(--coral);}
+
+  .score{position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--bg); padding:10px 0; border-bottom:1px solid var(--border); font-size:14px; font-weight:700; display:flex; justify-content:space-between;}
+  body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--bg);}
+  .item{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin:14px 0;}
+  .said{font-size:13px; color:var(--mute); font-weight:700; margin:0 0 4px;}
+  .claim{font-size:16.5px; margin:0 0 10px; line-height:1.45;}
+  .claim::before{content:"«";} .claim::after{content:"»";}
+  .ev{font-size:14px; background:var(--soft); border-radius:8px; padding:9px 11px; margin:0 0 12px;}
+  .ev b{color:var(--indigo);}
+  .btns{display:grid; grid-template-columns:repeat(4,1fr); gap:7px;}
+  @media(max-width:560px){.btns{grid-template-columns:1fr 1fr;}}
+  .btns button{font:inherit; font-size:13.5px; font-weight:700; padding:9px 6px; border-radius:8px; border:1.5px solid var(--border); background:var(--card); color:var(--ink); cursor:pointer;}
+  .btns button:disabled{cursor:default;}
+  .btns button.pick-ok{border-color:var(--teal); background:var(--tealL); color:var(--teal);}
+  .btns button.pick-bad{border-color:var(--coral); background:var(--coralL); color:var(--coral);}
+  .btns button.answer{border-color:var(--teal); border-style:dashed;}
+  .fb{display:none; margin-top:12px; font-size:14px; border-left:4px solid var(--border); padding:4px 0 4px 12px;}
+  .fb.show{display:block;}
+  .fb .v{font-weight:800; margin:0 0 4px;}
+  .fb .v.ok{color:var(--teal);} .fb .v.bad{color:var(--coral);}
+  .fb p{margin:4px 0;}
+  .reset{font:inherit; font-size:13px; background:none; border:0; color:var(--indigo); cursor:pointer; text-decoration:underline; padding:0;}
+
+  .tpl{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px;}
+  .row{display:grid; grid-template-columns:1.4fr 1fr 150px 1fr 32px; gap:8px; align-items:start; padding:8px 0; border-bottom:1px solid var(--border);}
+  .row:last-of-type{border-bottom:0;}
+  .row.head{font-size:12.5px; font-weight:700; color:var(--mute); padding-top:0;}
+  .row textarea,.row select{font:inherit; font-size:13.5px; width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:7px; background:var(--card); color:var(--ink); min-height:38px; resize:vertical;}
+  .row .del{font:inherit; border:0; background:none; color:var(--mute); cursor:pointer; font-size:18px; line-height:1; padding:8px 0;}
+  @media(max-width:700px){.row{grid-template-columns:1fr;} .row.head{display:none;} .row .del{justify-self:end;}}
+  .actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; align-items:center;}
+  .actions button{font:inherit; font-size:14px; font-weight:700; padding:8px 14px; border-radius:8px; border:0; cursor:pointer;}
+  .primary{background:var(--night); color:#fff;} .secondary{background:var(--soft); color:var(--indigo);}
+  .msg{font-size:13.5px; color:var(--teal); font-weight:700;}
+  .foot{margin-top:30px; padding-top:14px; border-top:1px solid var(--border); font-size:13px; color:var(--mute);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a href="index.html">← Aula del curso</a><a href="ruta_biblioshiny.html">Ruta guiada</a></div>
+
+  <h1>Audita a la IA</h1>
+  <p class="intro">Le pedimos a una IA que interpretara las redes y tablas del laboratorio de cerebelo y epilepsia. Algunas de sus frases son correctas; otras no. Clasifica cada una mirando la evidencia, como harás después con la respuesta de tu propia IA.</p>
+
+  <div class="scale" aria-label="Escala de clasificación">
+    <div class="k-res"><b>Respaldada</b><span>Un valor de los datos la sostiene tal cual.</span></div>
+    <div class="k-pla"><b>Plausible</b><span>Coherente con los datos, pero va más allá de ellos.</span></div>
+    <div class="k-nod"><b>No demostrada</b><span>Los datos no permiten afirmarla.</span></div>
+    <div class="k-inc"><b>Incorrecta</b><span>Los datos la contradicen o confunde conceptos.</span></div>
+  </div>
+
+  <div class="score" aria-live="polite"><span id="scoreTxt">0 de 9 clasificadas</span><button class="reset" id="reset" type="button">Empezar de nuevo</button></div>
+  <div id="items"></div>
+
+  <h2>Ahora audita la respuesta de tu IA</h2>
+  <p class="intro">Pega aquí las afirmaciones que tu IA hizo sobre tus propios datos. Para cada una anota la celda o el valor que la respalda, clasifícala y escribe la corrección. Luego cópialas y pégalas en la hoja «Auditoria_IA» del Excel: cada fila cae en su columna.</p>
+  <div class="tpl">
+    <div class="row head"><span>Afirmación de la IA</span><span>Evidencia (celda o valor)</span><span>Clasificación</span><span>Corrección o límite</span><span></span></div>
+    <div id="rows"></div>
+    <div class="actions">
+      <button type="button" class="secondary" id="addRow">Agregar fila</button>
+      <button type="button" class="primary" id="copyRows">Copiar para Excel</button>
+      <span class="msg" id="copyMsg" aria-live="polite"></span>
+    </div>
+  </div>
+
+  <div class="foot">
+    <p>Afirmaciones construidas a partir de las redes y tablas reales del laboratorio (corpus de PubMed sobre cerebelo y epilepsia, 919 registros, descargado el 27 de octubre de 2026). Cada evidencia se verificó contra el corpus y los archivos exportados de Biblioshiny.</p>
+    <p>Tus respuestas y tu tabla se guardan solo en este navegador.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var CAT={res:"Respaldada",pla:"Plausible",nod:"No demostrada",inc:"Incorrecta"};
+  var ITEMS=[
+    {c:"En la Red B, «epilepsy» tiene el PageRank más alto (0.1595).",
+     e:"<b>Red_B_Titulos, fila epilepsy:</b> PageRank 0.15948, el máximo de la tabla (el valor uniforme 1/30 es 0.0333).",a:"res",
+     w:"El valor está en la tabla y es el más alto.",fix:"Respaldada en esta red. Ojo: el término de búsqueda casi siempre domina su propia red; no implica importancia fisiopatológica."},
+    {c:"La Red B es mejor que la Red A porque su modularidad es mayor (0.1419 frente a 0.121).",
+     e:"<b>Comparación:</b> Red A, 50 términos de palabras clave, Q = 0.121. Red B, 30 términos de títulos, Q = 0.1419.",a:"nod",
+     w:"Los dos valores son correctos, pero entre una red y otra cambian el campo y el número de nodos; además, Q no mide calidad.",fix:"No se puede comparar sin repetir con el mismo número de nodos. Q describe la partición; no dice qué red es «mejor»."},
+    {c:"La co-ocurrencia de «cerebellar» y «epilepsy» prueba que el cerebelo participa en la generación de crisis.",
+     e:"<b>Red B:</b> red de palabras que aparecen juntas en los títulos de los artículos.",a:"inc",
+     w:"Confunde una red de términos con una red neurobiológica, y una co-ocurrencia con una causa.",fix:"La red solo muestra que esos términos aparecen juntos en títulos. Cualquier mecanismo requiere evidencia experimental, no bibliométrica."},
+    {c:"«humans» aparece en 578 de los 919 registros del corpus.",
+     e:"<b>Conteo en Keywords Plus (MeSH):</b> 578 registros incluyen HUMANS. Solo 729 de 919 registros tienen MeSH.",a:"res",
+     w:"El conteo coincide con el corpus.",fix:"Respaldada, con un matiz de denominador: 190 registros no tienen MeSH y no se pueden clasificar; decir «el 63 % del corpus son estudios en humanos» sería impreciso."},
+    {c:"El promedio de citas por documento es 0, así que este tema tiene muy poco impacto.",
+     e:"<b>Main Information:</b> Average citations per doc = 0. <b>Completeness of metadata:</b> Total Citation, «Completely missing» (919 de 919).",a:"inc",
+     w:"PubMed no exporta citas: el 0 es un dato ausente, no un cero real.",fix:"El impacto por citas es desconocido con esta fuente. Para estudiarlo hay que usar una base que incluya citas, como OpenAlex."},
+    {c:"La producción sobre el tema cayó en 2026 (59 documentos) respecto a 2022 (67).",
+     e:"<b>Annual Scientific Production:</b> 2022 = 67; 2026 = 59. El registro más reciente del corpus es del 27 de octubre de 2026.",a:"nod",
+     w:"Los dos números son correctos, pero 2026 no había terminado cuando se descargó el corpus.",fix:"Con un año incompleto no se puede afirmar una caída. Compara solo años completos o reporta el periodo exacto."},
+    {c:"La comunidad 2 de la Red A (animals, mice, rats, disease models, animal, mutation, phenotype…) agrupa la investigación experimental en modelos animales y genética.",
+     e:"<b>Red A, comunidad 2:</b> animals, mice, rats, disease models, animal, phenotype, mutation, pedigree, mice, knockout, mutation/genetics, mice, transgenic, entre otros.",a:"pla",
+     w:"Los términos del grupo son coherentes con esa etiqueta, pero ponerle nombre a un grupo es una interpretación.",fix:"Preséntala como hipótesis («parece agrupar…») y confírmala leyendo una muestra de documentos de ese grupo."},
+    {c:"Como «study» es un término central en la Red B, la mayoría de los artículos son estudios empíricos.",
+     e:"<b>Conteo en títulos:</b> «study» aparece en 81 de 919 títulos.",a:"inc",
+     w:"Los datos la contradicen: 81 de 919 es menos del 9 %, no la mayoría. Además, una palabra en el título no define el diseño del estudio.",fix:"Centralidad no es proporción. Para hablar de diseños, usa el tipo de publicación o revisa los documentos."},
+    {c:"La comunidad 3 de la Red A sugiere un eje clínico de diagnóstico y tratamiento.",
+     e:"<b>Red A, comunidad 3:</b> electroencephalography, treatment outcome, positron-emission tomography, anticonvulsants/therapeutic use, fluorodeoxyglucose f18.",a:"pla",
+     w:"Los cinco términos son de diagnóstico (EEG, PET) y tratamiento, así que la lectura es coherente; aun así es una etiqueta interpretativa sobre solo cinco términos.",fix:"Mantenla como lectura tentativa y menciona que el grupo es pequeño."}
+  ];
+  var KEY="auditoria_ia_v1", st={ans:{},rows:null};
+  try{var s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s)st=s;}catch(e){}
+  st.ans=st.ans||{};
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+
+  var box=document.getElementById("items");
+  function renderItems(){
+    box.innerHTML="";
+    ITEMS.forEach(function(it,i){
+      var d=document.createElement("article"); d.className="item";
+      d.innerHTML='<p class="said">Afirmación '+(i+1)+' · la IA dijo</p><p class="claim"></p><p class="ev"></p><div class="btns" role="group" aria-label="Clasificar afirmación '+(i+1)+'"></div><div class="fb" aria-live="polite"><p class="v"></p><p class="why"></p><p class="fix"></p></div>';
+      d.querySelector(".claim").textContent=it.c;
+      d.querySelector(".ev").innerHTML=it.e;
+      var b=d.querySelector(".btns");
+      Object.keys(CAT).forEach(function(k){var bt=document.createElement("button");bt.type="button";bt.textContent=CAT[k];bt.dataset.k=k;b.appendChild(bt);});
+      b.addEventListener("click",function(e){var bt=e.target.closest("button");if(!bt||st.ans[i])return;st.ans[i]=bt.dataset.k;save();show(d,i);score();});
+      box.appendChild(d); if(st.ans[i])show(d,i);
+    });
+    score();
+  }
+  function show(d,i){
+    var it=ITEMS[i], pick=st.ans[i], ok=pick===it.a;
+    [].forEach.call(d.querySelectorAll(".btns button"),function(bt){
+      bt.disabled=true;
+      if(bt.dataset.k===pick)bt.className=ok?"pick-ok":"pick-bad";
+      else if(bt.dataset.k===it.a)bt.className="answer";
+    });
+    var fb=d.querySelector(".fb"); fb.classList.add("show");
+    var v=fb.querySelector(".v"); v.className="v "+(ok?"ok":"bad");
+    v.textContent=ok?"Correcto: "+CAT[it.a]+".":"Es «"+CAT[it.a]+"», no «"+CAT[pick]+"».";
+    fb.querySelector(".why").textContent=it.w;
+    fb.querySelector(".fix").innerHTML="<b>Corrección para tu informe:</b> ";
+    fb.querySelector(".fix").appendChild(document.createTextNode(it.fix));
+  }
+  function score(){
+    var n=Object.keys(st.ans).length, ok=0;
+    Object.keys(st.ans).forEach(function(i){if(st.ans[i]===ITEMS[i].a)ok++;});
+    document.getElementById("scoreTxt").textContent= n<ITEMS.length ? n+" de "+ITEMS.length+" clasificadas" : "Terminaste: "+ok+" de "+ITEMS.length+" correctas";
+  }
+  document.getElementById("reset").addEventListener("click",function(){st.ans={};save();renderItems();});
+
+  // plantilla propia
+  var rowsEl=document.getElementById("rows");
+  if(!st.rows||!st.rows.length)st.rows=[["","","",""],["","","",""],["","","",""]];
+  function renderRows(){
+    rowsEl.innerHTML="";
+    st.rows.forEach(function(r,i){
+      var row=document.createElement("div"); row.className="row";
+      var labels=["Afirmación de la IA","Evidencia","Clasificación","Corrección o límite"];
+      for(var j=0;j<4;j++){
+        var f;
+        if(j===2){f=document.createElement("select");["","Respaldada","Plausible","No demostrada","Incorrecta"].forEach(function(o){var op=document.createElement("option");op.value=o;op.textContent=o||"Elegir…";f.appendChild(op);});}
+        else{f=document.createElement("textarea");f.rows=2;}
+        f.value=r[j]; f.setAttribute("aria-label",labels[j]+" fila "+(i+1));
+        (function(j){f.addEventListener("input",function(){st.rows[i][j]=this.value;save();});f.addEventListener("change",function(){st.rows[i][j]=this.value;save();});})(j);
+        row.appendChild(f);
+      }
+      var del=document.createElement("button"); del.type="button"; del.className="del"; del.textContent="×"; del.setAttribute("aria-label","Eliminar fila "+(i+1));
+      del.addEventListener("click",function(){st.rows.splice(i,1);if(!st.rows.length)st.rows.push(["","","",""]);save();renderRows();});
+      row.appendChild(del); rowsEl.appendChild(row);
+    });
+  }
+  document.getElementById("addRow").addEventListener("click",function(){st.rows.push(["","","",""]);save();renderRows();});
+  document.getElementById("copyRows").addEventListener("click",function(){
+    var clean=function(s){return String(s||"").replace(/[\t\r\n]+/g," ").trim();};
+    var filled=st.rows.filter(function(r){return r.some(function(c){return clean(c);});});
+    var msg=document.getElementById("copyMsg");
+    if(!filled.length){msg.textContent="Escribe al menos una afirmación.";return;}
+    var txt=filled.map(function(r){return r.map(clean).join("\t");}).join("\n");
+    function ok(){msg.textContent="Copiado: "+filled.length+(filled.length===1?" fila":" filas")+". Pégalo en la primera celda vacía de «Auditoria_IA».";}
+    function fallback(){var ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok();}catch(e){msg.textContent="No se pudo copiar.";}document.body.removeChild(ta);}
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,fallback);else fallback();
+  });
+  renderItems(); renderRows();
+})();
+</script>
+</body>
+</html>

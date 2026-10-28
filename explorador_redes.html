@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Explorador de redes · Laboratorio cerebelo y epilepsia</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#C98A0B; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#5E6678; --bg:#F6F7FB; --card:#FFFFFF;
+    --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF; --coralL:#FBE9EB; --edge:#8C96B8;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --indigo:#8B85FF; --teal:#3CC9B5; --amber:#F0B640; --coral:#F07484;
+    --ink:#EAECF4; --mute:#A3ABC4; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23; --edge:#6B7699;
+  }}
+  :root[data-theme="dark"]{
+    --indigo:#8B85FF; --teal:#3CC9B5; --amber:#F0B640; --coral:#F07484;
+    --ink:#EAECF4; --mute:#A3ABC4; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23; --edge:#6B7699;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.5;}
+  a{color:var(--indigo);} 
+  :focus-visible{outline:3px solid var(--amber); outline-offset:2px;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 18px 64px;}
+  .nav{display:flex; justify-content:space-between; gap:12px; padding:14px 0; font-size:13.5px; color:var(--mute);}
+  .nav a{font-weight:700; text-decoration:none;}
+  header h1{font-size:clamp(24px,3.4vw,34px); line-height:1.12; margin:6px 0 8px; letter-spacing:-.01em;}
+  header p{margin:0 0 4px; color:var(--mute); max-width:68ch; font-size:15px;}
+  .badge-real{display:inline-block; margin-top:8px; font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:6px;
+    background:var(--tealL); color:var(--teal);}
+
+  .stage{display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:18px; margin-top:18px; align-items:start;}
+  @media(max-width:860px){.stage{grid-template-columns:1fr;}}
+  .panel{background:var(--card); border:1px solid var(--border); border-radius:12px;}
+  .controls{display:flex; flex-wrap:wrap; gap:14px; align-items:center; padding:12px 14px; border-bottom:1px solid var(--border);}
+  .seg{display:inline-flex; border:1px solid var(--border); border-radius:9px; overflow:hidden;}
+  .seg button{border:0; background:transparent; color:var(--ink); padding:8px 14px; font-weight:700; font-size:13.5px; cursor:pointer;}
+  .seg button[aria-pressed="true"]{background:var(--night); color:#fff;}
+  .thr{display:flex; align-items:center; gap:9px; flex:1; min-width:240px; font-size:13px; color:var(--mute);}
+  .thr input{flex:1; accent-color:var(--indigo);}
+  .thr output{font-weight:800; color:var(--ink); min-width:30px; text-align:right;}
+  .count{font-size:12.5px; color:var(--mute); padding:8px 14px 0;}
+  svg#net{display:block; width:100%; height:auto; touch-action:manipulation;}
+  svg#net .node{cursor:pointer;}
+  .legend{display:flex; flex-wrap:wrap; gap:14px; padding:4px 14px 12px; font-size:12.5px; color:var(--mute);}
+  .legend i{display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:5px; vertical-align:-1px;}
+
+  .detail{padding:16px;}
+  .detail h2{font-size:20px; margin:0 0 2px;}
+  .detail .sub{font-size:13px; color:var(--mute); margin:0 0 12px;}
+  .kv{display:grid; grid-template-columns:1fr auto; gap:5px 10px; font-size:13.5px; margin:0 0 12px;}
+  .kv dt{color:var(--mute);} .kv dd{margin:0; font-weight:700; font-variant-numeric:tabular-nums; text-align:right;}
+  .read{font-size:13px; background:var(--soft); border-radius:9px; padding:10px 11px; margin:0 0 12px;}
+  .nb{list-style:none; padding:0; margin:0; font-size:13px;}
+  .nb li{display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);}
+  .nb li:last-child{border-bottom:0;}
+  .empty{color:var(--mute); font-size:14px;}
+
+  h2.sec{font-size:21px; margin:34px 0 8px;}
+  .lead{color:var(--mute); margin:0 0 12px; max-width:70ch; font-size:14.5px;}
+  .rank{padding:14px;}
+  .rank select{font:inherit; font-size:13.5px; padding:6px 9px; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--ink);}
+  .bars{list-style:none; padding:0; margin:12px 0 0;}
+  .bars li button{all:unset; box-sizing:border-box; display:grid; grid-template-columns:150px 1fr 78px; gap:10px; align-items:center;
+    width:100%; padding:5px 4px; border-radius:6px; cursor:pointer; font-size:13.5px;}
+  .bars li button:hover{background:var(--soft);}
+  .bars li button:focus-visible{outline:3px solid var(--amber);}
+  .bars .bar{height:10px; border-radius:5px;}
+  .bars .val{text-align:right; font-variant-numeric:tabular-nums; font-weight:700;}
+  .bars .nm{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .uni{font-size:12.5px; color:var(--mute); margin-top:8px;}
+
+  .tablewrap{overflow-x:auto;}
+  table{border-collapse:collapse; width:100%; min-width:560px; font-size:14px; background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden;}
+  th,td{padding:10px 12px; text-align:left; border-bottom:1px solid var(--border);}
+  thead th{font-size:13px; color:var(--mute); font-weight:700; background:var(--soft);}
+  td.num{font-variant-numeric:tabular-nums; font-weight:700;}
+  .ok{color:var(--teal); font-weight:700;}
+  .confound{display:grid; grid-template-columns:auto 1fr; gap:12px; margin-top:14px; padding:14px 16px; border-left:5px solid var(--coral);
+    background:var(--coralL); border-radius:0 10px 10px 0; font-size:14.5px;}
+  .confound strong{display:block; margin-bottom:2px;}
+  .note{font-size:13.5px; color:var(--mute); margin:10px 0 0; max-width:75ch;}
+
+  .infer{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media(max-width:640px){.infer{grid-template-columns:1fr;}}
+  .infer section{padding:14px 16px; border-radius:12px; border:1px solid var(--border);}
+  .infer .yes{background:var(--tealL);} .infer .no{background:var(--coralL);}
+  .infer h3{margin:0 0 6px; font-size:16px;} .infer .yes h3{color:var(--teal);} .infer .no h3{color:var(--coral);}
+  .infer ul{margin:0; padding-left:18px; font-size:14px;} .infer li{margin:5px 0;}
+
+  .prov{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); font-size:13px; color:var(--mute); max-width:80ch;}
+  .prov p{margin:5px 0;}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a href="index.html">← Aula del curso</a><a href="leccion3.html">Lección 3</a></div>
+
+  <header>
+    <h1>Explorador de redes: cerebelo y epilepsia</h1>
+    <p>Dos redes de co-ocurrencia construidas en Biblioshiny con el mismo corpus de PubMed. Cambia de red, sube el umbral y toca un término para ver sus métricas y sus conexiones más fuertes.</p>
+    <span class="badge-real">Datos reales del laboratorio · no sintéticos</span>
+  </header>
+
+  <div class="stage">
+    <div class="panel">
+      <div class="controls">
+        <div class="seg" role="group" aria-label="Elegir red">
+          <button type="button" data-net="A" aria-pressed="true">Red A · palabras clave</button>
+          <button type="button" data-net="B" aria-pressed="false">Red B · títulos</button>
+        </div>
+        <label class="thr">Co-ocurrencias mínimas
+          <input type="range" id="thr" min="0" max="5" step="1" value="2" aria-describedby="countTxt">
+          <output id="thrv">10</output>
+        </label>
+      </div>
+      <div class="count" id="countTxt"></div>
+      <svg id="net" viewBox="0 0 800 540" role="img" aria-label="Red de co-ocurrencia"></svg>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <aside class="panel detail" id="detail" aria-live="polite">
+      <p class="empty">Toca un término en la red o en el ranking para ver sus métricas.</p>
+    </aside>
+  </div>
+
+  <h2 class="sec">Ranking por métrica</h2>
+  <p class="lead">Cada métrica responde una pregunta distinta. No hay cortes universales: compara dentro de la misma red.</p>
+  <div class="panel rank">
+    <label>Ordenar por
+      <select id="metric">
+        <option value="pr">PageRank: relevancia estructural relativa</option>
+        <option value="bt">Betweenness: intermediación entre términos</option>
+        <option value="cl">Closeness: cercanía al resto de la red</option>
+        <option value="f">Registros: en cuántos documentos aparece</option>
+      </select>
+    </label>
+    <ol class="bars" id="bars"></ol>
+    <p class="uni" id="uni"></p>
+  </div>
+
+  <h2 class="sec">¿Cuál red es «mejor»? Por qué esta pregunta no tiene respuesta</h2>
+  <p class="lead">Ambas Q se recalcularon de forma independiente a partir de los archivos exportados y coinciden con lo reportado en sesión.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Indicador</th><th>Red A</th><th>Red B</th></tr></thead>
+      <tbody id="cmp"></tbody>
+    </table>
+  </div>
+  <div class="confound">
+    <span aria-hidden="true">⚠️</span>
+    <div><strong>La diferencia de Q no se puede atribuir al campo.</strong>
+    Entre A y B cambiaron dos cosas a la vez: el campo (palabras clave frente a títulos) y el número de nodos (50 frente a 30). Cualquier diferencia puede venir de una, de otra o de ambas. Para aislar el efecto del campo hay que repetir con el mismo número de nodos y los mismos filtros.</div>
+  </div>
+  <p class="note">Detalle de método: las Q reportadas se reproducen con pesos iguales al número de co-ocurrencias y la partición exportada. Al reconstruir la Red A desde el corpus con los parámetros por defecto de bibliometrix 5.5.0 aparecen los mismos términos principales, pero una partición algo distinta (Q = 0.117). La Q depende de los parámetros, la versión del programa y el azar del algoritmo Louvain: regístralos todos antes de comparar.</p>
+
+  <h2 class="sec">Qué se puede inferir</h2>
+  <div class="infer">
+    <section class="yes"><h3>Sí puedes decir</h3><ul>
+      <li>Qué términos aparecen juntos con más frecuencia en este corpus.</li>
+      <li>Qué términos ocupan posiciones centrales en esta red, con el valor que lo respalda.</li>
+      <li>Cómo cambia la red al subir el umbral o al cambiar de campo.</li>
+    </ul></section>
+    <section class="no"><h3>No puedes decir</h3><ul>
+      <li>Que un término central es más importante científicamente.</li>
+      <li>Que una comunidad es una escuela de pensamiento o un mecanismo cerebral.</li>
+      <li>Que una red es mejor porque su Q es mayor.</li>
+    </ul></section>
+  </div>
+
+  <div class="prov">
+    <p><strong>Procedencia.</strong> Corpus de PubMed sobre cerebelo y epilepsia (919 registros de referencia). Redes exportadas de Biblioshiny el 27 y 28 de octubre de 2026 (formato Pajek: .net, .vec y .clu). Métricas tomadas del Excel del laboratorio; nombres, comunidades, PageRank y Q verificados contra los archivos Pajek. El número de registros de cada término se calculó directamente del corpus: en la Red A, registros cuyos MeSH incluyen el término (solo 729 de 919 registros tienen MeSH); en la Red B, títulos que contienen la palabra exacta.</p>
+    <p>La posición de cada término en el dibujo es solo visual (disposición por fuerzas, semilla fija 42): la distancia en pantalla no es una métrica. Tamaño del círculo = número de registros con el término; color = comunidad; grosor de línea = co-ocurrencias.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var DATA={"A":{"campo":"Palabras clave / indexación","N":50,"E":629,"K":3,"Qrep":0.121,"Qcalc":0.121,"nodes":[{"id":1,"n":"humans","c":1,"f":578,"x":0.4544,"y":0.5641,"bt":175.708,"cl":0.02041,"pr":0.10635},{"id":2,"n":"male","c":1,"f":411,"x":0.5016,"y":0.5486,"bt":180.158,"cl":0.02041,"pr":0.09769},{"id":3,"n":"female","c":1,"f":360,"x":0.4462,"y":0.5048,"bt":99.107,"cl":0.02,"pr":0.08768},{"id":4,"n":"animals","c":2,"f":241,"x":0.6094,"y":0.4906,"bt":45.863,"cl":0.01754,"pr":0.04095},{"id":5,"n":"adult","c":1,"f":214,"x":0.4189,"y":0.6372,"bt":24.196,"cl":0.01852,"pr":0.05575},{"id":6,"n":"magnetic resonance imaging","c":1,"f":177,"x":0.2781,"y":0.6443,"bt":12.513,"cl":0.01695,"pr":0.0426},{"id":7,"n":"child","c":1,"f":143,"x":0.3043,"y":0.5381,"bt":8.118,"cl":0.01724,"pr":0.03663},{"id":8,"n":"adolescent","c":1,"f":140,"x":0.3418,"y":0.6227,"bt":9.685,"cl":0.01754,"pr":0.04092},{"id":9,"n":"young adult","c":1,"f":121,"x":0.2825,"y":0.7793,"bt":6.116,"cl":0.01587,"pr":0.03614},{"id":10,"n":"middle aged","c":1,"f":107,"x":0.3312,"y":0.7297,"bt":5.056,"cl":0.01639,"pr":0.03119},{"id":11,"n":"mice","c":2,"f":96,"x":0.6872,"y":0.3425,"bt":3.868,"cl":0.01389,"pr":0.01973},{"id":12,"n":"child, preschool","c":1,"f":91,"x":0.2424,"y":0.5708,"bt":4.32,"cl":0.01667,"pr":0.02714},{"id":13,"n":"magnetic resonance imaging/methods","c":1,"f":84,"x":0.371,"y":0.5265,"bt":3.618,"cl":0.01613,"pr":0.02234},{"id":14,"n":"rats","c":2,"f":78,"x":0.8354,"y":0.7195,"bt":1.574,"cl":0.01282,"pr":0.01581},{"id":15,"n":"disease models, animal","c":2,"f":73,"x":0.7594,"y":0.4147,"bt":4.166,"cl":0.01408,"pr":0.01793},{"id":16,"n":"electroencephalography","c":3,"f":72,"x":0.5261,"y":0.6722,"bt":3.724,"cl":0.01639,"pr":0.01943},{"id":17,"n":"phenotype","c":2,"f":54,"x":0.4288,"y":0.2729,"bt":1.129,"cl":0.0137,"pr":0.01397},{"id":18,"n":"brain mapping","c":1,"f":52,"x":0.4057,"y":0.7753,"bt":0.677,"cl":0.01429,"pr":0.01592},{"id":19,"n":"retrospective studies","c":1,"f":52,"x":0.1812,"y":0.7156,"bt":0.835,"cl":0.01429,"pr":0.01571},{"id":20,"n":"infant","c":1,"f":51,"x":0.3169,"y":0.4207,"bt":1.131,"cl":0.01449,"pr":0.01639},{"id":21,"n":"brain/pathology","c":1,"f":45,"x":0.2019,"y":0.4174,"bt":0.204,"cl":0.01389,"pr":0.01244},{"id":22,"n":"mutation","c":2,"f":44,"x":0.5513,"y":0.2996,"bt":0.624,"cl":0.01333,"pr":0.01126},{"id":23,"n":"image processing, computer-assisted","c":1,"f":39,"x":0.0686,"y":0.5844,"bt":0.338,"cl":0.01333,"pr":0.01337},{"id":24,"n":"rats, wistar","c":2,"f":38,"x":0.9485,"y":0.5583,"bt":0.043,"cl":0.0119,"pr":0.00921},{"id":25,"n":"mice, inbred c57bl","c":2,"f":30,"x":0.8534,"y":0.1715,"bt":0.045,"cl":0.01149,"pr":0.00882},{"id":26,"n":"pedigree","c":2,"f":30,"x":0.2934,"y":0.2139,"bt":0.172,"cl":0.01266,"pr":0.00977},{"id":27,"n":"brain/diagnostic imaging","c":1,"f":29,"x":0.5217,"y":0.8247,"bt":0.161,"cl":0.01316,"pr":0.0081},{"id":28,"n":"aged","c":1,"f":27,"x":0.2274,"y":0.887,"bt":0.269,"cl":0.01316,"pr":0.00967},{"id":29,"n":"case-control studies","c":1,"f":26,"x":0.0972,"y":0.4784,"bt":0.09,"cl":0.01299,"pr":0.00924},{"id":30,"n":"cerebellum/pathology","c":1,"f":26,"x":0.1928,"y":0.2976,"bt":0.051,"cl":0.01299,"pr":0.00862},{"id":31,"n":"mice, knockout","c":2,"f":26,"x":0.6707,"y":0.1509,"bt":0.204,"cl":0.01235,"pr":0.0083},{"id":32,"n":"mutation/genetics","c":2,"f":25,"x":0.4475,"y":0.1657,"bt":0.198,"cl":0.01282,"pr":0.00748},{"id":33,"n":"rats, sprague-dawley","c":2,"f":25,"x":0.9625,"y":0.7279,"bt":0.278,"cl":0.01205,"pr":0.00765},{"id":34,"n":"treatment outcome","c":3,"f":25,"x":0.315,"y":0.9683,"bt":0.115,"cl":0.01235,"pr":0.00789},{"id":35,"n":"brain mapping/methods","c":1,"f":23,"x":0.4112,"y":0.9167,"bt":0.15,"cl":0.01282,"pr":0.00747},{"id":36,"n":"neuropsychological tests","c":1,"f":23,"x":0.0,"y":0.6504,"bt":0.046,"cl":0.0125,"pr":0.00864},{"id":37,"n":"positron-emission tomography","c":3,"f":23,"x":0.6014,"y":0.8939,"bt":0.723,"cl":0.01351,"pr":0.00855},{"id":38,"n":"anticonvulsants/therapeutic use","c":3,"f":21,"x":0.4329,"y":1.0,"bt":0.039,"cl":0.01266,"pr":0.00706},{"id":39,"n":"fluorodeoxyglucose f18","c":3,"f":20,"x":0.5204,"y":0.9713,"bt":0.212,"cl":0.01333,"pr":0.00782},{"id":40,"n":"infant, newborn","c":1,"f":19,"x":0.0502,"y":0.2883,"bt":0.009,"cl":0.01176,"pr":0.00642},{"id":41,"n":"brain/metabolism","c":2,"f":18,"x":1.0,"y":0.3235,"bt":0.04,"cl":0.01149,"pr":0.00564},{"id":42,"n":"deep brain stimulation/methods","c":2,"f":18,"x":0.5112,"y":0.0,"bt":0.002,"cl":0.01099,"pr":0.00444},{"id":43,"n":"electroencephalography/methods","c":1,"f":18,"x":0.1482,"y":0.9155,"bt":0.027,"cl":0.01235,"pr":0.00682},{"id":44,"n":"seizures","c":2,"f":18,"x":0.697,"y":0.919,"bt":0.02,"cl":0.0119,"pr":0.00561},{"id":45,"n":"time factors","c":2,"f":18,"x":0.6831,"y":0.5675,"bt":0.2,"cl":0.01333,"pr":0.00699},{"id":46,"n":"functional laterality","c":1,"f":17,"x":0.051,"y":0.8613,"bt":0.028,"cl":0.01235,"pr":0.00694},{"id":47,"n":"mice, transgenic","c":2,"f":17,"x":0.7677,"y":0.0013,"bt":0.03,"cl":0.01149,"pr":0.00626},{"id":48,"n":"positron-emission tomography/methods","c":1,"f":17,"x":0.7184,"y":0.6865,"bt":0.074,"cl":0.0125,"pr":0.00637},{"id":49,"n":"disease progression","c":1,"f":16,"x":0.6594,"y":0.8024,"bt":0.023,"cl":0.01235,"pr":0.00586},{"id":50,"n":"functional laterality/physiology","c":1,"f":16,"x":0.0234,"y":0.758,"bt":0.021,"cl":0.0125,"pr":0.00703}],"edges":[[1,33,2],[4,9,2],[4,35,2],[4,43,2],[5,14,2],[5,24,2],[5,42,2],[6,11,2],[6,44,2],[7,28,2],[7,31,2],[7,45,2],[7,50,2],[8,31,2],[9,32,2],[10,15,2],[10,17,2],[10,38,2],[10,43,2],[11,12,2],[11,24,2],[11,33,2],[11,49,2],[12,23,2],[12,39,2],[12,45,2],[12,46,2],[12,50,2],[13,14,2],[13,15,2],[13,16,2],[13,22,2],[13,27,2],[13,31,2],[13,32,2],[13,33,2],[13,45,2],[13,46,2],[13,49,2],[13,50,2],[14,27,2],[14,35,2],[14,38,2],[14,39,2],[14,48,2],[15,18,2],[15,21,2],[15,37,2],[15,42,2],[15,48,2],[16,17,2],[16,24,2],[16,33,2],[16,45,2],[16,49,2],[17,21,2],[17,23,2],[17,38,2],[17,40,2],[18,24,2],[18,30,2],[18,37,2],[18,48,2],[18,50,2],[19,22,2],[19,30,2],[19,38,2],[19,39,2],[19,43,2],[19,45,2],[20,29,2],[20,37,2],[20,38,2],[20,39,2],[20,45,2],[21,26,2],[21,32,2],[21,35,2],[21,50,2],[22,47,2],[22,48,2],[23,43,2],[24,33,2],[24,37,2],[24,41,2],[24,45,2],[26,31,2],[26,40,2],[27,33,2],[27,35,2],[27,39,2],[27,40,2],[28,37,2],[28,39,2],[28,46,2],[28,49,2],[28,50,2],[29,30,2],[30,32,2],[31,41,2],[31,45,2],[32,41,2],[32,47,2],[33,35,2],[33,48,2],[34,42,2],[35,45,2],[35,50,2],[37,46,2],[38,39,2],[43,49,2],[1,47,3],[2,42,3],[3,42,3],[4,10,3],[4,18,3],[4,27,3],[4,29,3],[4,30,3],[4,34,3],[4,39,3],[5,15,3],[5,31,3],[6,15,3],[6,43,3],[6,45,3],[7,37,3],[7,49,3],[8,11,3],[8,32,3],[8,44,3],[8,49,3],[9,45,3],[10,20,3],[10,45,3],[11,30,3],[11,44,3],[11,45,3],[12,29,3],[12,35,3],[12,36,3],[12,37,3],[12,48,3],[12,49,3],[13,39,3],[13,40,3],[14,18,3],[15,32,3],[15,49,3],[16,21,3],[16,44,3],[16,50,3],[17,25,3],[17,47,3],[18,21,3],[18,27,3],[18,39,3],[19,21,3],[19,27,3],[19,34,3],[19,35,3],[20,21,3],[20,27,3],[20,32,3],[20,43,3],[20,48,3],[21,22,3],[22,44,3],[26,28,3],[28,44,3],[29,36,3],[29,45,3],[33,41,3],[37,38,3],[1,41,4],[4,6,4],[4,12,4],[4,38,4],[4,49,4],[5,11,4],[6,22,4],[6,35,4],[6,37,4],[7,39,4],[7,46,4],[7,48,4],[8,38,4],[8,45,4],[8,48,4],[8,50,4],[9,38,4],[9,44,4],[9,48,4],[9,49,4],[10,12,4],[10,27,4],[10,34,4],[10,35,4],[10,48,4],[10,49,4],[11,26,4],[11,32,4],[13,28,4],[13,30,4],[13,36,4],[15,22,4],[16,29,4],[16,34,4],[16,36,4],[17,30,4],[18,29,4],[19,23,4],[19,29,4],[19,40,4],[19,44,4],[20,30,4],[21,28,4],[22,25,4],[23,28,4],[23,29,4],[27,37,4],[28,36,4],[29,46,4],[33,45,4],[34,39,4],[35,43,4],[36,50,4],[39,48,4],[1,24,5],[2,44,5],[3,41,5],[3,47,5],[4,21,5],[5,45,5],[6,39,5],[7,38,5],[8,27,5],[8,28,5],[8,37,5],[8,39,5],[8,40,5],[8,46,5],[10,26,5],[10,37,5],[10,39,5],[10,44,5],[12,32,5],[12,34,5],[13,23,5],[15,41,5],[15,45,5],[16,25,5],[17,31,5],[18,20,5],[19,28,5],[20,26,5],[21,23,5],[22,31,5],[23,46,5],[31,47,5],[34,37,5],[36,46,5],[1,25,6],[4,13,6],[4,32,6],[4,48,6],[5,22,6],[5,32,6],[5,38,6],[5,48,6],[6,26,6],[6,32,6],[6,49,6],[7,29,6],[7,30,6],[7,34,6],[7,35,6],[9,27,6],[9,30,6],[9,35,6],[9,46,6],[10,46,6],[12,27,6],[12,30,6],[12,43,6],[14,41,6],[14,45,6],[15,17,6],[15,33,6],[16,22,6],[16,27,6],[16,38,6],[18,36,6],[18,46,6],[20,22,6],[21,30,6],[22,26,6],[23,30,6],[26,32,6],[33,37,6],[3,44,7],[4,8,7],[4,26,7],[5,27,7],[5,43,7],[6,34,7],[6,40,7],[7,32,7],[7,36,7],[7,40,7],[8,22,7],[8,35,7],[9,36,7],[9,37,7],[9,39,7],[9,43,7],[10,30,7],[10,36,7],[10,50,7],[11,16,7],[12,21,7],[12,38,7],[14,37,7],[16,20,7],[16,23,7],[16,28,7],[16,37,7],[16,39,7],[23,36,7],[23,50,7],[25,31,7],[34,38,7],[2,41,8],[2,47,8],[3,31,8],[3,49,8],[4,5,8],[4,37,8],[4,44,8],[5,37,8],[5,44,8],[5,49,8],[6,28,8],[6,30,8],[6,38,8],[7,11,8],[7,43,8],[8,17,8],[8,26,8],[8,34,8],[9,34,8],[9,50,8],[11,14,8],[11,41,8],[12,40,8],[13,29,8],[14,16,8],[17,20,8],[17,32,8],[25,47,8],[1,45,9],[3,24,9],[3,37,9],[3,45,9],[3,48,9],[5,20,9],[5,39,9],[5,46,9],[7,23,9],[7,26,9],[7,27,9],[8,36,9],[8,43,9],[9,28,9],[9,29,9],[12,22,9],[12,26,9],[13,18,9],[13,20,9],[13,48,9],[16,18,9],[16,19,9],[18,23,9],[1,31,10],[2,49,10],[3,25,10],[3,39,10],[4,7,10],[4,42,10],[5,35,10],[6,46,10],[7,10,10],[8,30,10],[9,20,10],[9,21,10],[10,29,10],[12,18,10],[13,43,10],[15,16,10],[15,47,10],[2,31,11],[2,39,11],[2,43,11],[3,14,11],[3,35,11],[3,38,11],[4,45,11],[5,36,11],[8,29,11],[13,21,11],[15,31,11],[19,20,11],[20,40,11],[2,27,12],[2,37,12],[2,40,12],[2,48,12],[3,43,12],[5,17,12],[5,34,12],[5,50,12],[6,29,12],[6,50,12],[7,22,12],[8,16,12],[11,17,12],[11,22,12],[11,47,12],[1,48,13],[2,46,13],[3,27,13],[3,46,13],[5,26,13],[7,21,13],[8,23,13],[9,16,13],[12,13,13],[13,19,13],[37,39,13],[1,14,14],[1,44,14],[1,49,14],[2,34,14],[2,35,14],[2,38,14],[2,50,14],[3,34,14],[3,50,14],[6,17,14],[7,17,14],[10,18,14],[10,21,14],[12,17,14],[1,37,15],[1,50,15],[2,32,15],[3,32,15],[3,40,15],[4,16,15],[5,29,15],[8,21,15],[9,19,15],[9,23,15],[10,16,15],[10,19,15],[13,35,15],[17,26,15],[1,46,16],[2,45,16],[5,30,16],[6,21,16],[6,36,16],[7,16,16],[10,23,16],[12,16,16],[1,39,17],[1,42,17],[1,43,17],[4,41,17],[4,47,17],[15,25,17],[4,22,18],[6,19,18],[6,20,18],[6,27,18],[9,12,18],[15,24,18],[1,38,19],[1,40,19],[2,30,19],[2,36,19],[3,36,19],[5,28,19],[7,18,19],[12,19,19],[1,32,20],[2,25,20],[3,15,20],[3,30,20],[4,17,20],[7,13,20],[17,22,20],[1,15,21],[1,35,21],[2,33,21],[10,28,21],[11,31,21],[1,36,22],[2,22,22],[2,29,22],[3,29,22],[5,12,22],[8,19,22],[9,18,22],[1,30,23],[2,28,23],[3,22,23],[1,29,24],[1,34,24],[3,26,24],[5,23,24],[8,20,24],[14,33,24],[3,28,25],[4,33,25],[5,19,25],[5,21,25],[7,19,25],[10,13,25],[1,27,26],[4,31,26],[11,25,26],[14,15,26],[1,28,27],[3,11,27],[5,16,27],[8,18,27],[6,16,28],[1,26,29],[2,26,29],[7,9,29],[2,24,30],[4,25,30],[5,18,31],[2,17,32],[2,21,32],[3,17,32],[6,23,32],[8,10,32],[8,13,32],[3,21,33],[6,18,33],[7,20,33],[11,15,33],[14,24,33],[1,11,34],[6,12,34],[9,13,34],[3,23,35],[1,22,36],[5,7,36],[2,23,37],[1,23,38],[4,24,38],[3,18,39],[2,19,40],[12,20,40],[2,18,41],[1,17,42],[2,20,42],[3,19,42],[1,21,43],[3,20,43],[2,11,46],[2,15,46],[3,16,46],[6,10,47],[1,18,49],[1,20,51],[2,14,51],[2,16,51],[3,4,51],[5,13,51],[1,19,52],[6,7,52],[8,12,52],[6,8,54],[6,9,55],[1,16,59],[9,10,62],[3,13,63],[2,13,65],[8,9,65],[7,12,69],[2,12,73],[4,15,73],[5,8,75],[3,12,76],[4,14,78],[1,13,81],[7,8,84],[5,6,87],[1,12,91],[1,4,92],[4,11,96],[2,10,97],[5,10,98],[3,10,100],[2,7,102],[1,10,107],[3,7,107],[5,9,108],[2,9,109],[2,4,113],[3,9,116],[2,8,119],[1,9,121],[2,6,125],[3,6,126],[3,8,126],[1,8,140],[1,7,143],[1,6,176],[3,5,181],[2,5,184],[1,5,214],[2,3,297],[1,2,326],[1,3,330]]},"B":{"campo":"Títulos","N":30,"E":261,"K":2,"Qrep":0.1419,"Qcalc":0.1419,"nodes":[{"id":1,"n":"epilepsy","c":1,"f":359,"x":0.4746,"y":0.5933,"bt":99.907,"cl":0.03333,"pr":0.15948},{"id":2,"n":"brain","c":2,"f":149,"x":0.5611,"y":0.5778,"bt":24.087,"cl":0.03448,"pr":0.06276},{"id":3,"n":"cerebellar","c":1,"f":128,"x":0.4868,"y":0.4673,"bt":6.088,"cl":0.02703,"pr":0.03659},{"id":4,"n":"lobe","c":1,"f":106,"x":0.517,"y":0.804,"bt":3.141,"cl":0.02564,"pr":0.07023},{"id":5,"n":"temporal","c":1,"f":105,"x":0.4841,"y":0.8934,"bt":3.032,"cl":0.02564,"pr":0.06898},{"id":6,"n":"study","c":1,"f":81,"x":0.3125,"y":0.5616,"bt":6.231,"cl":0.02857,"pr":0.04928},{"id":7,"n":"functional","c":1,"f":77,"x":0.2494,"y":0.7178,"bt":2.074,"cl":0.02703,"pr":0.04838},{"id":8,"n":"seizures","c":2,"f":76,"x":0.6436,"y":0.6592,"bt":6.286,"cl":0.0303,"pr":0.03336},{"id":9,"n":"patients","c":1,"f":74,"x":0.4075,"y":0.6603,"bt":4.967,"cl":0.02857,"pr":0.04393},{"id":10,"n":"connectivity","c":1,"f":57,"x":0.1767,"y":0.8543,"bt":0.769,"cl":0.025,"pr":0.03743},{"id":11,"n":"clinical","c":2,"f":52,"x":0.4143,"y":0.2201,"bt":1.527,"cl":0.02381,"pr":0.01945},{"id":12,"n":"syndrome","c":2,"f":50,"x":0.6938,"y":0.2656,"bt":2.134,"cl":0.02381,"pr":0.01953},{"id":13,"n":"cerebellum","c":2,"f":52,"x":0.705,"y":0.8088,"bt":1.248,"cl":0.025,"pr":0.0196},{"id":14,"n":"model","c":2,"f":46,"x":0.931,"y":0.7476,"bt":1.424,"cl":0.02273,"pr":0.02532},{"id":15,"n":"stimulation","c":2,"f":45,"x":0.2776,"y":0.3265,"bt":0.747,"cl":0.02326,"pr":0.02394},{"id":16,"n":"epileptic","c":2,"f":45,"x":0.6682,"y":0.4409,"bt":1.487,"cl":0.02381,"pr":0.01846},{"id":17,"n":"imaging","c":1,"f":45,"x":0.3647,"y":0.8298,"bt":1.514,"cl":0.02703,"pr":0.02545},{"id":18,"n":"mouse","c":2,"f":42,"x":1.0,"y":0.6325,"bt":0.617,"cl":0.02222,"pr":0.02147},{"id":19,"n":"gene","c":2,"f":42,"x":0.7919,"y":0.4191,"bt":2.369,"cl":0.025,"pr":0.02059},{"id":20,"n":"report","c":2,"f":38,"x":0.7208,"y":0.0,"bt":0.198,"cl":0.02041,"pr":0.01209},{"id":21,"n":"myoclonic","c":1,"f":37,"x":0.2411,"y":0.428,"bt":1.078,"cl":0.02439,"pr":0.02351},{"id":22,"n":"network","c":1,"f":38,"x":0.2693,"y":0.9542,"bt":0.739,"cl":0.02326,"pr":0.02466},{"id":23,"n":"cortical","c":1,"f":38,"x":0.1444,"y":0.5439,"bt":0.262,"cl":0.02439,"pr":0.01637},{"id":24,"n":"rat","c":2,"f":31,"x":0.9459,"y":0.9111,"bt":0.22,"cl":0.02083,"pr":0.01675},{"id":25,"n":"activity","c":1,"f":31,"x":0.0607,"y":0.6623,"bt":0.368,"cl":0.02326,"pr":0.01877},{"id":26,"n":"generalized","c":2,"f":29,"x":0.6025,"y":1.0,"bt":0.389,"cl":0.02273,"pr":0.01998},{"id":27,"n":"receptor","c":2,"f":33,"x":0.9066,"y":0.5288,"bt":0.533,"cl":0.02326,"pr":0.01459},{"id":28,"n":"matter","c":1,"f":31,"x":0.0153,"y":0.8139,"bt":0.077,"cl":0.02222,"pr":0.01846},{"id":29,"n":"children","c":1,"f":30,"x":0.0,"y":0.4461,"bt":0.248,"cl":0.02222,"pr":0.01463},{"id":30,"n":"mutation","c":2,"f":29,"x":0.5852,"y":0.1253,"bt":0.24,"cl":0.02128,"pr":0.01597}],"edges":[[2,3,2],[2,23,2],[2,28,2],[4,19,2],[4,27,2],[5,19,2],[5,27,2],[6,8,2],[6,30,2],[7,11,2],[7,19,2],[8,11,2],[8,12,2],[8,18,2],[8,27,2],[9,15,2],[9,19,2],[9,25,2],[9,27,2],[10,13,2],[10,15,2],[10,17,2],[10,23,2],[10,25,2],[11,13,2],[11,23,2],[11,29,2],[12,19,2],[12,21,2],[13,17,2],[13,19,2],[13,21,2],[13,23,2],[14,27,2],[15,16,2],[15,17,2],[15,20,2],[15,23,2],[15,26,2],[16,20,2],[17,22,2],[17,23,2],[17,24,2],[17,27,2],[17,29,2],[18,26,2],[18,27,2],[19,23,2],[19,24,2],[20,30,2],[21,25,2],[21,28,2],[22,25,2],[22,29,2],[23,28,2],[23,29,2],[24,26,2],[25,29,2],[27,30,2],[28,29,2],[2,20,3],[2,29,3],[2,30,3],[3,7,3],[3,12,3],[3,16,3],[3,17,3],[4,18,3],[4,23,3],[5,18,3],[5,23,3],[6,16,3],[6,23,3],[6,26,3],[6,27,3],[7,15,3],[7,23,3],[7,28,3],[8,15,3],[8,19,3],[8,23,3],[8,30,3],[9,11,3],[9,21,3],[9,30,3],[10,28,3],[10,29,3],[11,16,3],[11,21,3],[12,14,3],[12,16,3],[12,29,3],[13,14,3],[14,16,3],[14,26,3],[16,22,3],[16,25,3],[17,26,3],[17,28,3],[19,21,3],[19,27,3],[24,27,3],[1,20,4],[2,13,4],[2,19,4],[2,21,4],[2,26,4],[3,20,4],[3,21,4],[3,23,4],[3,28,4],[4,13,4],[5,13,4],[7,8,4],[7,13,4],[7,21,4],[7,29,4],[9,16,4],[11,12,4],[11,30,4],[12,18,4],[12,27,4],[13,16,4],[13,26,4],[15,25,4],[16,17,4],[16,27,4],[17,25,4],[19,20,4],[22,26,4],[2,10,5],[3,14,5],[3,24,5],[3,25,5],[3,29,5],[4,14,5],[5,14,5],[6,11,5],[6,21,5],[6,25,5],[7,25,5],[8,10,5],[8,13,5],[8,14,5],[8,22,5],[9,12,5],[9,13,5],[10,22,5],[11,19,5],[11,20,5],[12,30,5],[13,18,5],[13,24,5],[14,19,5],[16,18,5],[18,19,5],[21,22,5],[21,30,5],[1,12,6],[1,24,6],[2,27,6],[3,18,6],[5,8,6],[5,25,6],[6,15,6],[8,17,6],[9,10,6],[12,20,6],[2,12,7],[4,8,7],[4,25,7],[6,12,7],[6,28,7],[6,29,7],[7,17,7],[8,9,7],[8,21,7],[8,24,7],[9,17,7],[9,26,7],[10,21,7],[10,26,7],[11,15,7],[21,23,7],[1,18,8],[1,27,8],[2,8,8],[2,11,8],[3,9,8],[5,17,8],[6,10,8],[6,17,8],[7,26,8],[9,22,8],[9,28,8],[2,14,9],[2,16,9],[3,15,9],[4,17,9],[7,22,9],[8,16,9],[2,22,10],[2,25,10],[4,22,10],[4,28,10],[5,22,10],[6,22,10],[1,11,11],[1,30,11],[3,4,11],[3,5,11],[3,8,11],[5,28,11],[19,30,11],[1,19,12],[2,7,12],[2,9,12],[2,17,12],[7,9,12],[2,4,13],[2,24,13],[8,26,13],[14,24,13],[2,5,14],[2,6,14],[2,18,14],[3,6,14],[1,8,15],[1,29,15],[6,7,15],[1,13,16],[1,14,16],[1,23,17],[1,25,18],[5,10,18],[6,9,18],[1,26,19],[4,10,20],[5,9,20],[1,17,21],[1,28,21],[4,9,21],[14,18,21],[5,6,22],[4,6,23],[2,15,25],[4,7,25],[5,7,25],[1,22,26],[1,15,30],[1,21,32],[7,10,40],[1,3,46],[1,9,48],[1,10,49],[1,6,51],[1,7,55],[1,2,61],[1,5,100],[4,5,100],[1,4,102]]}};
+  var COLORS=["--indigo","--teal","--amber","--coral"];
+  var THR=[1,2,5,10,20,50,100];
+  var state={net:"A",thrIdx:2,sel:null,hover:null,metric:"pr"};
+  var svg=document.getElementById("net"), NS="http://www.w3.org/2000/svg";
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+  function el(t,a,txt){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;}
+  function fmt(v,d){return Number(v).toLocaleString("es-MX",{minimumFractionDigits:d,maximumFractionDigits:d});}
+  function D(){return DATA[state.net];}
+  function byId(id){return D().nodes[id-1];}
+  function thresholds(){var mx=D().edges[D().edges.length-1][2];return THR.filter(function(t){return t<=mx;});}
+  function ccolor(c){return css(COLORS[(c-1)%COLORS.length]);}
+
+  function neighbors(id){
+    var out=[];D().edges.forEach(function(e){if(e[0]===id)out.push([e[1],e[2]]);else if(e[1]===id)out.push([e[0],e[2]]);});
+    return out.sort(function(a,b){return b[1]-a[1];});
+  }
+
+  function drawNet(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    var d=D(), ts=thresholds(), t=ts[Math.min(state.thrIdx,ts.length-1)];
+    var W=800,H=540,P=46, maxw=d.edges[d.edges.length-1][2], fmax=Math.max.apply(null,d.nodes.map(function(n){return n.f;}));
+    function X(n){return P+n.x*(W-2*P);} function Y(n){return P+(1-n.y)*(H-2*P);}
+    var focus=state.hover||state.sel, nbSet={};
+    if(focus) neighbors(focus).forEach(function(p){if(p[1]>=t)nbSet[p[0]]=1;});
+    var g=el("g",{}), shown=0, edgeCol=css("--edge");
+    d.edges.forEach(function(e){
+      if(e[2]<t)return; shown++;
+      var a=byId(e[0]), b=byId(e[1]), r=Math.sqrt(e[2]/maxw), inc=focus&&(e[0]===focus||e[1]===focus);
+      g.appendChild(el("line",{x1:X(a),y1:Y(a),x2:X(b),y2:Y(b),
+        stroke: inc?ccolor(byId(focus).c):edgeCol,
+        "stroke-width":(0.5+3.4*r).toFixed(2),
+        "stroke-opacity": focus?(inc?0.85:0.06):(0.14+0.5*r).toFixed(2),"stroke-linecap":"round"}));
+    });
+    svg.appendChild(g);
+    var top=d.nodes.slice().sort(function(a,b){return b.f-a.f;}).slice(0,d.N>30?16:14).map(function(n){return n.id;});
+    var ink=css("--ink"), bg=css("--card");
+    d.nodes.forEach(function(n){
+      var rad=4+14*Math.sqrt(n.f/fmax), dim=focus&&n.id!==focus&&!nbSet[n.id];
+      var c=el("circle",{cx:X(n).toFixed(1),cy:Y(n).toFixed(1),r:rad.toFixed(1),fill:ccolor(n.c),
+        "fill-opacity":dim?0.18:0.92,stroke:n.id===state.sel?ink:bg,"stroke-width":n.id===state.sel?2.6:1.4,class:"node"});
+      c.appendChild(el("title",{},n.n));
+      c.addEventListener("mouseenter",function(){state.hover=n.id;drawNet();});
+      c.addEventListener("mouseleave",function(){state.hover=null;drawNet();});
+      c.addEventListener("click",function(){select(n.id);});
+      svg.appendChild(c);
+    });
+    // etiquetas sin superposición: se colocan por prioridad y se omiten las que chocarían
+    var cand=d.nodes.filter(function(n){return (!focus&&top.indexOf(n.id)>=0)||n.id===focus||nbSet[n.id];});
+    cand.sort(function(a,b){return (b.id===focus)-(a.id===focus)||b.f-a.f;});
+    var boxes=[];
+    cand.forEach(function(n){
+      var rad=4+14*Math.sqrt(n.f/fmax), fs=n.id===focus?14:12, w=n.n.length*fs*0.56+6, h=fs+4;
+      var cx=Math.min(W-w/2-4,Math.max(w/2+4,X(n))), cy=Math.max(h,Y(n)-rad-4), bx={x1:cx-w/2,x2:cx+w/2,y1:cy-h+2,y2:cy+2};
+      if(n.id!==focus&&boxes.some(function(o){return bx.x1<o.x2&&bx.x2>o.x1&&bx.y1<o.y2&&bx.y2>o.y1;}))return;
+      boxes.push(bx);
+      svg.appendChild(el("text",{x:cx.toFixed(1),y:cy.toFixed(1),"text-anchor":"middle","font-size":fs,
+        "font-weight":n.id===focus?800:600,fill:ink,"paint-order":"stroke",stroke:bg,"stroke-width":3.5,"stroke-linejoin":"round","pointer-events":"none"},n.n));
+    });
+    document.getElementById("thrv").textContent=t;
+    document.getElementById("countTxt").textContent=shown+" de "+d.E+" conexiones visibles · "+d.N+" términos";
+    var lg=document.getElementById("legend"); lg.innerHTML="";
+    for(var k=1;k<=d.K;k++){var s=document.createElement("span");var i=document.createElement("i");i.style.background=ccolor(k);s.appendChild(i);s.appendChild(document.createTextNode("Comunidad "+k));lg.appendChild(s);}
+  }
+
+  function rankOf(id,key){var arr=D().nodes.slice().sort(function(a,b){return b[key]-a[key];});for(var i=0;i<arr.length;i++)if(arr[i].id===id)return i+1;}
+
+  function drawDetail(){
+    var box=document.getElementById("detail");
+    if(!state.sel){box.innerHTML='<p class="empty">Toca un término en la red o en el ranking para ver sus métricas.</p>';return;}
+    var d=D(), n=byId(state.sel), ratio=n.pr*d.N;
+    box.innerHTML="";
+    var h=document.createElement("h2");h.textContent=n.n;box.appendChild(h);
+    var sub=document.createElement("p");sub.className="sub";sub.textContent="Comunidad "+n.c+" · Red "+state.net+" ("+d.campo.toLowerCase()+")";box.appendChild(sub);
+    var dl=document.createElement("dl");dl.className="kv";
+    [["Registros con el término",fmt(n.f,0)],["PageRank",fmt(n.pr,4)+"  (#"+rankOf(n.id,"pr")+")"],["Respecto a 1/N",fmt(ratio,2)+" ×"],
+     ["Betweenness",fmt(n.bt,1)+"  (#"+rankOf(n.id,"bt")+")"],["Closeness",fmt(n.cl,4)+"  (#"+rankOf(n.id,"cl")+")"]].forEach(function(p){
+      var dt=document.createElement("dt");dt.textContent=p[0];var dd=document.createElement("dd");dd.textContent=p[1];dl.appendChild(dt);dl.appendChild(dd);});
+    box.appendChild(dl);
+    var rd=document.createElement("p");rd.className="read";
+    rd.textContent=(ratio>=1?"Su PageRank es "+fmt(ratio,1)+" veces el valor uniforme (1/"+d.N+"): ocupa una posición más central que el promedio en esta red.":"Su PageRank está por debajo del valor uniforme (1/"+d.N+"): posición menos central que el promedio en esta red.")+" Es una posición estructural en la red de términos, no una medida de importancia científica.";
+    box.appendChild(rd);
+    var t=document.createElement("p");t.className="sub";t.style.margin="0 0 4px";t.textContent="Co-ocurre más con:";box.appendChild(t);
+    var ul=document.createElement("ul");ul.className="nb";
+    neighbors(n.id).slice(0,6).forEach(function(p){var li=document.createElement("li");var a=document.createElement("span");a.textContent=byId(p[0]).n;var b=document.createElement("strong");b.textContent=fmt(p[1],0);li.appendChild(a);li.appendChild(b);ul.appendChild(li);});
+    box.appendChild(ul);
+  }
+
+  function drawBars(){
+    var d=D(), key=state.metric, arr=d.nodes.slice().sort(function(a,b){return b[key]-a[key];}).slice(0,10), mx=arr[0][key];
+    var ol=document.getElementById("bars"); ol.innerHTML="";
+    var dec={pr:4,bt:1,cl:4,f:0}[key];
+    arr.forEach(function(n){
+      var li=document.createElement("li"), b=document.createElement("button"); b.type="button";
+      b.setAttribute("aria-label",n.n+": "+fmt(n[key],dec));
+      var nm=document.createElement("span");nm.className="nm";nm.textContent=n.n;
+      var tr=document.createElement("span");var bar=document.createElement("span");bar.className="bar";bar.style.display="block";
+      bar.style.width=Math.max(2,100*n[key]/mx)+"%";bar.style.background=ccolor(n.c);tr.appendChild(bar);
+      var v=document.createElement("span");v.className="val";v.textContent=fmt(n[key],dec);
+      b.appendChild(nm);b.appendChild(tr);b.appendChild(v);b.addEventListener("click",function(){select(n.id);});
+      li.appendChild(b);ol.appendChild(li);
+    });
+    document.getElementById("uni").textContent= key==="pr" ? "Referencia uniforme: 1/N = "+fmt(1/d.N,4)+". Por encima de ese valor, el término es más central que el promedio." :
+      key==="f" ? "Cuenta documentos del corpus, no co-ocurrencias. En la Red A solo cuentan los 729 registros con MeSH." : "La escala de esta métrica depende del tamaño de la red: no compares valores absolutos entre A y B.";
+  }
+
+  function drawCmp(){
+    var A=DATA.A,B=DATA.B,tb=document.getElementById("cmp");tb.innerHTML="";
+    var rows=[["Campo",A.campo,B.campo],["Términos (nodos)",A.N,B.N],["Conexiones distintas",A.E,B.E],["Comunidades",A.K,B.K],
+      ["Q reportada en sesión",fmt(A.Qrep,4),fmt(B.Qrep,4)],["Q recalculada",fmt(A.Qcalc,4),fmt(B.Qcalc,4)]];
+    rows.forEach(function(r,i){var tr=document.createElement("tr");r.forEach(function(c,j){var td=document.createElement(j?"td":"th");td.textContent=c;if(j&&i>0)td.className="num";tr.appendChild(td);});tb.appendChild(tr);});
+    var tr=document.createElement("tr"),th=document.createElement("th");th.textContent="¿Coinciden?";tr.appendChild(th);
+    [A,B].forEach(function(x){var td=document.createElement("td");td.className="ok";td.textContent=Math.abs(x.Qrep-x.Qcalc)<0.0006?"Sí ✓":"No";tr.appendChild(td);});
+    tb.appendChild(tr);
+  }
+
+  function select(id){state.sel=id;drawNet();drawDetail();}
+  function setNet(k){
+    state.net=k;state.sel=null;state.hover=null;
+    var ts=thresholds();var r=document.getElementById("thr");r.max=ts.length-1;
+    state.thrIdx=Math.min(k==="A"?3:2,ts.length-1);r.value=state.thrIdx;
+    [].forEach.call(document.querySelectorAll(".seg button"),function(b){b.setAttribute("aria-pressed",b.dataset.net===k?"true":"false");});
+    drawNet();drawDetail();drawBars();
+  }
+  document.querySelector(".seg").addEventListener("click",function(e){var b=e.target.closest("button[data-net]");if(b)setNet(b.dataset.net);});
+  document.getElementById("thr").addEventListener("input",function(){state.thrIdx=+this.value;drawNet();});
+  document.getElementById("metric").addEventListener("change",function(){state.metric=this.value;drawBars();});
+  if(window.matchMedia)window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){drawNet();drawBars();});
+  drawCmp();setNet("A");
+})();
+</script>
+</body>
+</html>

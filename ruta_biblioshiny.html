@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Ruta guiada · PubMed → Biblioshiny</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E7F72; --amber:#A86F00; --coral:#C23A4C;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#5E6678; --bg:#F6F7FB; --card:#FFFFFF;
+    --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF; --coralL:#FBE9EB;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --indigo:#8B85FF; --teal:#3CC9B5; --amber:#F0B640; --coral:#F07484;
+    --ink:#EAECF4; --mute:#A3ABC4; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }}
+  :root[data-theme="dark"]{
+    --indigo:#8B85FF; --teal:#3CC9B5; --amber:#F0B640; --coral:#F07484;
+    --ink:#EAECF4; --mute:#A3ABC4; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.55;}
+  a{color:var(--indigo);}
+  :focus-visible{outline:3px solid var(--amber); outline-offset:2px;}
+  .wrap{max-width:780px; margin:0 auto; padding:0 18px 70px;}
+  .nav{display:flex; justify-content:space-between; gap:12px; padding:14px 0; font-size:13.5px;}
+  .nav a{font-weight:700; text-decoration:none;}
+  h1{font-size:clamp(25px,3.6vw,34px); line-height:1.12; margin:6px 0 10px; letter-spacing:-.01em;}
+  .intro{color:var(--mute); font-size:15.5px; margin:0 0 10px; max-width:66ch;}
+  .meta{font-size:13.5px; color:var(--mute); margin:0;}
+  .progress{position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--bg); padding:12px 0 10px; margin-top:14px; border-bottom:1px solid var(--border);}
+  .progress .row{display:flex; justify-content:space-between; font-size:13px; font-weight:700; margin-bottom:6px;}
+  .track{height:8px; border-radius:4px; background:var(--border); overflow:hidden;}
+  .fill{height:100%; width:0; background:var(--teal); transition:width .3s;}
+  body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--bg);}
+
+  .step{position:relative; padding:26px 0 8px 52px; border-left:2px solid var(--border); margin-left:17px;}
+  .step:last-of-type{border-left-color:transparent;}
+  .num{position:absolute; left:-18px; top:24px; width:34px; height:34px; border-radius:50%; background:var(--card); border:2px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; color:var(--mute);}
+  .step.done .num{background:var(--teal); border-color:var(--teal); color:#fff;}
+  .step h2{font-size:19px; margin:2px 0 6px; line-height:1.25;}
+  .path{display:inline-block; font-size:13px; font-weight:700; color:var(--indigo); background:var(--soft); padding:3px 9px; border-radius:6px; margin:0 0 8px;}
+  .step p{margin:6px 0; font-size:15px;}
+  .do{margin:6px 0 10px; padding-left:20px; font-size:15px;} .do li{margin:4px 0;}
+  .desc{display:grid; grid-template-columns:118px 1fr; gap:6px 12px; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin:10px 0; font-size:14px;}
+  .desc dt{font-weight:700; color:var(--mute);} .desc dd{margin:0;}
+  .desc dt.no{color:var(--coral);}
+  @media(max-width:520px){.desc{grid-template-columns:1fr;} .desc dd{margin-bottom:6px;}}
+  .eq{display:block; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-family:Menlo,Consolas,monospace; font-size:13px; overflow-x:auto; white-space:pre-wrap; word-break:break-word;}
+  .warn{background:var(--amberL); border-radius:10px; padding:11px 13px; font-size:14px; margin:10px 0;}
+  .warn.red{background:var(--coralL);}
+
+  .check{background:var(--tealL); border-radius:10px; padding:12px 14px; margin:12px 0 4px;}
+  .check .q{font-weight:700; font-size:14.5px; margin:0 0 8px;}
+  .check .ctl{display:flex; flex-wrap:wrap; gap:8px; align-items:center;}
+  .check input[type=text]{font:inherit; font-size:15px; width:150px; padding:7px 10px; border:1px solid var(--border); border-radius:8px; background:var(--card); color:var(--ink);}
+  .check button, .copy{font:inherit; font-size:14px; font-weight:700; padding:7px 14px; border-radius:8px; border:0; background:var(--night); color:#fff; cursor:pointer;}
+  .opts{display:flex; flex-direction:column; gap:6px;}
+  .opts label{display:flex; gap:8px; align-items:flex-start; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:14px; cursor:pointer;}
+  .fb{font-size:14px; margin:8px 0 0; min-height:1px;}
+  .fb.ok{color:var(--teal); font-weight:700;} .fb.bad{color:var(--coral);}
+  .tick{display:flex; gap:9px; align-items:center; font-size:14.5px; font-weight:700; margin:12px 0 4px; cursor:pointer;}
+  .tick input{width:18px; height:18px; accent-color:var(--teal);}
+
+  .tablewrap{overflow-x:auto; margin:10px 0;}
+  table{border-collapse:collapse; width:100%; min-width:520px; font-size:13.5px; background:var(--card); border:1px solid var(--border);}
+  th,td{padding:8px 10px; text-align:left; border-bottom:1px solid var(--border); vertical-align:top;}
+  thead th{background:var(--soft); color:var(--mute); font-size:12.5px;}
+  .form{display:grid; gap:10px; margin:12px 0;}
+  .form label{font-size:13.5px; font-weight:700; display:grid; gap:4px;}
+  .form input, .form textarea{font:inherit; font-size:14.5px; font-weight:400; padding:8px 10px; border:1px solid var(--border); border-radius:8px; background:var(--card); color:var(--ink);}
+  .form textarea{min-height:64px; resize:vertical;}
+  .foot{margin-top:30px; padding-top:14px; border-top:1px solid var(--border); font-size:13px; color:var(--mute);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a href="index.html">← Aula del curso</a><a href="explorador_redes.html">Explorador de redes</a></div>
+
+  <h1>Ruta guiada: de PubMed a Biblioshiny</h1>
+  <p class="intro">Reproduce paso a paso el análisis del laboratorio con el corpus de referencia (cerebelo y epilepsia). En cada paso sabrás qué estás viendo y comprobarás tu resultado. Cuando todos coincidan, repetirás la ruta con tu propio tema.</p>
+  <p class="meta">Corpus de referencia: 919 registros de PubMed, compartido por el docente en el aula virtual. Los nombres de los menús corresponden a Biblioshiny 5.5.0; en otras versiones pueden variar un poco.</p>
+
+  <div class="progress" aria-live="polite">
+    <div class="row"><span id="ptxt">0 de 13 pasos</span><span id="ppct">0 %</span></div>
+    <div class="track"><div class="fill" id="pfill"></div></div>
+  </div>
+
+  <section class="step" data-step="1">
+    <span class="num">1</span>
+    <h2>Abre tu registro antes de buscar</h2>
+    <p>La reproducibilidad empieza antes del primer clic. Anota en un documento: tu pregunta, la fecha de la búsqueda, la ecuación exacta, los filtros y el número de resultados. Al final de esta página tienes una plantilla.</p>
+    <label class="tick"><input type="checkbox" data-done>Tengo listo dónde registrar fecha, ecuación, filtros y N</label>
+  </section>
+
+  <section class="step" data-step="2">
+    <span class="num">2</span>
+    <h2>Busca en PubMed con una ecuación documentada</h2>
+    <span class="path">pubmed.ncbi.nlm.nih.gov</span>
+    <p>El corpus de referencia se generó el 27 de octubre de 2026 con esta ecuación y el filtro de fecha de publicación 2005–2026:</p>
+    <code class="eq">cerebellum[tiab] AND epilepsy[tiab]</code>
+    <p>Aun con el filtro, entraron 15 capítulos de libro fechados en 2004, probablemente porque PubMed usa otra fecha para los libros. Por eso, después de exportar, siempre se revisa qué entró.</p>
+    <p><code>[tiab]</code> busca en el título, el resumen y las palabras clave de los autores: 98 de los 919 registros entraron solo porque el término aparecía en sus palabras clave.</p>
+    <div class="warn">Si buscas hoy, tu número de resultados <b>no será 919</b>: PubMed crece cada día. Por eso practicamos con el corpus congelado y registramos siempre la fecha.</div>
+    <p>Para tu proyecto, una estrategia más completa agrupa sinónimos con <b>OR</b> dentro de cada concepto, une los conceptos con <b>AND</b> y combina MeSH (<code>[mh]</code>) con texto libre:</p>
+    <code class="eq">("Cerebellum"[mh] OR "cerebellum"[tiab] OR "cerebellar"[tiab]) AND ("Epilepsy"[mh] OR "epilepsy"[tiab] OR "seizures"[tiab])</code>
+    <p>Ejercítalo: corre las dos ecuaciones el mismo día y compara cuántos registros recupera cada una. Elegir entre ellas es una decisión de método que debes justificar en tu registro.</p>
+    <label class="tick"><input type="checkbox" data-done>Registré la ecuación exacta, la fecha y el número de resultados</label>
+  </section>
+
+  <section class="step" data-step="3">
+    <span class="num">3</span>
+    <h2>Exporta los resultados en formato PubMed</h2>
+    <ol class="do">
+      <li>Debajo de la caja de búsqueda, pulsa <b>Save</b>.</li>
+      <li>En <b>Selection</b>, elige <b>All results</b> (máximo 10 000).</li>
+      <li>En <b>Format</b>, elige <b>PubMed</b>.</li>
+      <li>Pulsa <b>Create file</b>: se descarga un archivo .txt.</li>
+    </ol>
+    <div class="check" data-type="choice" data-answer="b">
+      <p class="q">¿Por qué el formato PubMed y no «Summary» o «CSV»?</p>
+      <div class="opts">
+        <label><input type="radio" name="c3" value="a">Porque pesa menos</label>
+        <label><input type="radio" name="c3" value="b">Porque trae todos los campos etiquetados (autores, MeSH, afiliaciones…) que Biblioshiny necesita</label>
+        <label><input type="radio" name="c3" value="c">Porque incluye las citas de cada artículo</label>
+      </div>
+      <div class="ctl" style="margin-top:8px"><button type="button">Comprobar</button></div>
+      <p class="fb" data-ok="Correcto. El formato PubMed incluye todos los campos etiquetados de cada registro." data-bad="Revisa: el formato PubMed no trae citas (PubMed no las exporta); su ventaja es que incluye todos los campos etiquetados."></p>
+    </div>
+  </section>
+
+  <section class="step" data-step="4">
+    <span class="num">4</span>
+    <h2>Importa el archivo en Biblioshiny</h2>
+    <span class="path">Data › Import or Load</span>
+    <ol class="do">
+      <li>Elige <b>Import raw file(s)</b>.</li>
+      <li>En <b>Database</b>, elige <b>PubMed</b>.</li>
+      <li>Selecciona el archivo .txt y pulsa <b>Start</b>.</li>
+    </ol>
+    <div class="check" data-type="num" data-answer="919" data-tol="0">
+      <p class="q">¿Cuántos documentos importó Biblioshiny con el corpus de referencia?</p>
+      <div class="ctl"><input type="text" inputmode="numeric" aria-label="Número de documentos"><button type="button">Comprobar</button></div>
+      <p class="fb" data-ok="Coincide: 919 documentos. Tu importación es igual a la del laboratorio." data-bad="No coincide. Revisa que elegiste Database: PubMed y que el archivo es el corpus de referencia, no tu búsqueda de hoy."></p>
+    </div>
+  </section>
+
+  <section class="step" data-step="5">
+    <span class="num">5</span>
+    <h2>Revisa qué tan completos están los metadatos</h2>
+    <span class="path">Data › Import or Load · ventana «Completeness of metadata»</span>
+    <dl class="desc">
+      <dt>Qué es</dt><dd>Una tabla que dice, campo por campo, cuántos registros traen ese dato.</dd>
+      <dt>Qué responde</dt><dd>¿Qué análisis son viables con estos datos?</dd>
+      <dt>Qué mirar</dt><dd>Los campos marcados como <i>Poor</i>, <i>Critical</i> o <i>Completely missing</i>.</dd>
+      <dt class="no">Qué no concluir</dt><dd>Que un campo vacío significa «cero». Vacío es desconocido.</dd>
+    </dl>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Campo</th><th>Faltan</th><th>Qué implica</th></tr></thead>
+      <tbody>
+        <tr><td>Cited References, Total Citation</td><td>919 de 919</td><td>PubMed no exporta citas: no hay análisis de citación.</td></tr>
+        <tr><td>Keywords Plus (MeSH)</td><td>190 de 919</td><td>Solo los 729 registros indexados en MEDLINE tienen MeSH. La red de palabras clave usa 79 % del corpus.</td></tr>
+        <tr><td>DOI</td><td>115 de 919</td><td>Deduplicar por DOI dejaría fuera a 1 de cada 8 registros.</td></tr>
+        <tr><td>Abstract, Affiliation</td><td>5 y 9</td><td>Casi completos.</td></tr>
+      </tbody></table></div>
+    <div class="warn">Con PubMed, <b>Author's keywords</b> y <b>Keywords Plus</b> contienen exactamente lo mismo (los MeSH). No los trates como dos fuentes distintas.</div>
+    <div class="check" data-type="choice" data-answer="c">
+      <p class="q">De los 190 registros sin MeSH, ¿cuál es la explicación correcta?</p>
+      <div class="opts">
+        <label><input type="radio" name="c5" value="a">Son artículos de baja calidad</label>
+        <label><input type="radio" name="c5" value="b">Son todos de 2025 y 2026, aún no indexados</label>
+        <label><input type="radio" name="c5" value="c">Son registros que no están indexados en MEDLINE (la mayoría «PubMed-not-MEDLINE»), de muchos años distintos</label>
+      </div>
+      <div class="ctl" style="margin-top:8px"><button type="button">Comprobar</button></div>
+      <p class="fb" data-ok="Correcto. Los 190 coinciden con los registros no indexados en MEDLINE (158 PubMed-not-MEDLINE, 31 Publisher, 1 In-Process). Solo 36 son de 2025–2026." data-bad="Revísalo en el campo STAT del archivo: los 190 son registros no indexados en MEDLINE, repartidos entre 2004 y 2026. Que falte un dato no dice nada de la calidad."></p>
+    </div>
+  </section>
+
+  <section class="step" data-step="6">
+    <span class="num">6</span>
+    <h2>Lee la información principal</h2>
+    <span class="path">Overview › Main Information</span>
+    <dl class="desc">
+      <dt>Qué es</dt><dd>El resumen del corpus: periodo, fuentes, documentos, autores y colaboración.</dd>
+      <dt>Qué responde</dt><dd>¿Qué tamaño y forma tiene lo que voy a analizar?</dd>
+      <dt>Qué mirar</dt><dd>Que el número de documentos coincida con tu búsqueda, y el periodo cubierto.</dd>
+      <dt class="no">Qué no concluir</dt><dd>Nada sobre el campo completo: describe tu corpus, no toda la literatura.</dd>
+    </dl>
+    <div class="check" data-type="num" data-answer="349" data-tol="0">
+      <p class="q">¿Cuántas fuentes (Sources: journals, books, etc.) reporta?</p>
+      <div class="ctl"><input type="text" inputmode="numeric" aria-label="Número de fuentes"><button type="button">Comprobar</button></div>
+      <p class="fb" data-ok="Coincide: 349 fuentes. También deberías ver Timespan 2004:2026 y 5522 autores." data-bad="No coincide. Busca la fila «Sources (Journals, Books, etc)» en Main Information."></p>
+    </div>
+  </section>
+
+  <section class="step" data-step="7">
+    <span class="num">7</span>
+    <h2>Detecta la trampa del cero</h2>
+    <span class="path">Overview › Main Information</span>
+    <p>En la misma tabla verás <b>Average citations per doc: 0</b> y <b>References: 1</b>.</p>
+    <div class="check" data-type="choice" data-answer="b">
+      <p class="q">¿Qué significa ese 0?</p>
+      <div class="opts">
+        <label><input type="radio" name="c7" value="a">Que ningún artículo del corpus ha sido citado</label>
+        <label><input type="radio" name="c7" value="b">Que el dato no existe: PubMed no exporta citas, y el programa muestra 0 donde debería decir «desconocido»</label>
+        <label><input type="radio" name="c7" value="c">Que el corpus es demasiado reciente para tener citas</label>
+      </div>
+      <div class="ctl" style="margin-top:8px"><button type="button">Comprobar</button></div>
+      <p class="fb" data-ok="Correcto. En el paso 5 el propio Biblioshiny marcó Total Citation como «Completely missing»; aquí lo muestra como 0. Cero observado no es desconocido." data-bad="Compara con el paso 5: allí Biblioshiny dice que Total Citation falta al 100 %. Un dato que no existe no es un cero."></p>
+    </div>
+  </section>
+
+  <section class="step" data-step="8">
+    <span class="num">8</span>
+    <h2>Mira la producción por año</h2>
+    <span class="path">Overview › Annual Scientific Production</span>
+    <dl class="desc">
+      <dt>Qué es</dt><dd>Cuántos documentos del corpus se publicaron cada año.</dd>
+      <dt>Qué responde</dt><dd>¿Cómo se distribuye en el tiempo lo que encontré?</dd>
+      <dt>Qué mirar</dt><dd>Años sin documentos y el último año, que puede estar incompleto.</dd>
+      <dt class="no">Qué no concluir</dt><dd>Que el interés cayó en 2026: el año no ha terminado. La tasa de crecimiento anual (6.42 %) incluye ese año parcial.</dd>
+    </dl>
+    <div class="check" data-type="num" data-answer="67" data-tol="0">
+      <p class="q">¿Cuántos documentos hay en 2022, el año con más publicaciones?</p>
+      <div class="ctl"><input type="text" inputmode="numeric" aria-label="Documentos en 2022"><button type="button">Comprobar</button></div>
+      <p class="fb" data-ok="Coincide: 67. Fíjate además en que 2005 no aparece: ningún documento observado en tu corpus, que no es lo mismo que «nadie publicó»." data-bad="No coincide. Pasa el cursor sobre la barra de 2022 o revisa la tabla de la gráfica."></p>
+    </div>
+  </section>
+
+  <section class="step" data-step="9">
+    <span class="num">9</span>
+    <h2>Identifica las fuentes principales</h2>
+    <span class="path">Sources › Most Relevant Sources</span>
+    <dl class="desc">
+      <dt>Qué es</dt><dd>Las revistas que más documentos aportan a tu corpus.</dd>
+      <dt>Qué responde</dt><dd>¿Dónde se publica sobre este tema?</dd>
+      <dt>Qué mirar</dt><dd>Si dominan revistas de una sola disciplina.</dd>
+      <dt class="no">Qué no concluir</dt><dd>Que son las mejores revistas: el número de documentos no mide calidad.</dd>
+    </dl>
+    <div class="check" data-type="num" data-answer="39" data-tol="0">
+      <p class="q">La primera fuente es <i>Epilepsia</i>. ¿Cuántos documentos aporta?</p>
+      <div class="ctl"><input type="text" inputmode="numeric" aria-label="Documentos de Epilepsia"><button type="button">Comprobar</button></div>
+      <p class="fb" data-ok="Coincide: 39, seguida de Epilepsy &amp; Behavior (28) y Epilepsy Research (27)." data-bad="No coincide. Revisa la primera barra de Most Relevant Sources."></p>
+    </div>
+  </section>
+
+  <section class="step" data-step="10">
+    <span class="num">10</span>
+    <h2>Construye la red de palabras clave (Red A)</h2>
+    <span class="path">Conceptual Structure › Co-occurence Network</span>
+    <p>Parámetros: <b>Field</b>: Keywords Plus · <b>Number of Nodes</b>: 50 · <b>Normalization</b>: Association · <b>Clustering Algorithm</b>: Louvain. Anótalos en tu registro.</p>
+    <dl class="desc">
+      <dt>Qué es</dt><dd>Un mapa de qué términos aparecen juntos en los mismos documentos.</dd>
+      <dt>Qué responde</dt><dd>¿Qué temas se estudian juntos y cómo se agrupan?</dd>
+      <dt>Qué mirar</dt><dd>Los términos más grandes, los grupos (colores) y qué los conecta.</dd>
+      <dt class="no">Qué no concluir</dt><dd>Que un grupo es una escuela o un mecanismo cerebral, ni que un término central es más importante.</dd>
+    </dl>
+    <div class="warn">Los términos más grandes serán <i>humans</i>, <i>male</i> y <i>female</i>: son descriptores generales de MeSH, no hallazgos. Pregúntate si conviene excluirlos y documenta la decisión.</div>
+    <div class="check" data-type="text" data-answer="humans">
+      <p class="q">¿Cuál es el término más grande de la red?</p>
+      <div class="ctl"><input type="text" aria-label="Término más grande"><button type="button">Comprobar</button></div>
+      <p class="fb" data-ok="Coincide: humans, presente en 578 registros." data-bad="No coincide. Comprueba que el campo es Keywords Plus y no Titles."></p>
+    </div>
+    <div class="check" data-type="range" data-min="0.10" data-max="0.13">
+      <p class="q">Si tu versión muestra la modularidad (Q), ¿qué valor obtuviste?</p>
+      <div class="ctl"><input type="text" inputmode="decimal" aria-label="Modularidad Q"><button type="button">Comprobar</button></div>
+      <p class="fb" data-ok="Dentro del rango esperado. En el laboratorio se obtuvo 0.121; al reconstruir con los parámetros por defecto se obtiene 0.117. Pequeñas diferencias son normales: Louvain tiene un componente aleatorio." data-bad="Fuera del rango esperado (0.10–0.13). Revisa los cuatro parámetros. Si coinciden, registra tu valor y la versión del programa: Q depende de ambos."></p>
+    </div>
+    <p>Exporta la tabla de la red (Excel) y la red en formato Pajek: las usarás en el paso 12.</p>
+  </section>
+
+  <section class="step" data-step="11">
+    <span class="num">11</span>
+    <h2>Construye la red de títulos (Red B) y compáralas</h2>
+    <span class="path">Conceptual Structure › Co-occurence Network</span>
+    <p>Cambia <b>Field</b> a <b>Titles</b> y <b>Number of Nodes</b> a 30. Lo demás igual.</p>
+    <div class="check" data-type="text" data-answer="epilepsy">
+      <p class="q">¿Cuál es ahora el término más grande?</p>
+      <div class="ctl"><input type="text" aria-label="Término más grande en títulos"><button type="button">Comprobar</button></div>
+      <p class="fb" data-ok="Coincide: epilepsy. Explora las dos redes en el explorador interactivo." data-bad="No coincide. Comprueba que el campo es Titles."></p>
+    </div>
+    <div class="warn red">Entre la Red A y la Red B cambiaste <b>dos</b> cosas: el campo y el número de nodos. Si sus Q difieren, no puedes saber cuál de los dos cambios lo causó. Para comparar campos, repite con el mismo número de nodos.</div>
+    <p><a href="explorador_redes.html">Abrir el explorador de las redes A y B</a></p>
+  </section>
+
+  <section class="step" data-step="12">
+    <span class="num">12</span>
+    <h2>Pide a una IA que interprete tu tabla, y audítala</h2>
+    <p>Pega la tabla exportada (no la imagen) en la IA que uses, con este prompt:</p>
+    <code class="eq">Usa exclusivamente la tabla adjunta para comparar PageRank, betweenness, closeness y comunidades. Señala qué no puede inferirse. No inventes valores.</code>
+    <p>Después clasifica cada afirmación de la IA como <b>respaldada</b> (cita la celda), <b>plausible</b>, <b>no demostrada</b> o <b>incorrecta</b>, en la hoja «Auditoria_IA» del Excel del laboratorio. Practica primero con el <a href="auditoria_ia.html">clasificador de auditoría</a>: tiene 9 afirmaciones sobre estos mismos datos y una plantilla que se pega directo en Excel. Más prompts en el <a href="prompts_ia.html">banco de prompts</a>.</p>
+    <label class="tick"><input type="checkbox" data-done>Audité al menos tres afirmaciones de la IA con su evidencia</label>
+  </section>
+
+  <section class="step" data-step="13">
+    <span class="num">13</span>
+    <h2>Repite la ruta con tu tema</h2>
+    <p>Ya sabes llegar a donde llegó el laboratorio. Ahora haz lo mismo con tu pregunta. Llena tu registro: se guarda solo en este navegador y puedes copiarlo a tu expediente.</p>
+    <div class="form" id="reg">
+      <label>Pregunta de investigación<textarea data-k="pregunta"></textarea></label>
+      <label>Ecuación exacta de búsqueda<textarea data-k="ecuacion"></textarea></label>
+      <label>Fecha de la búsqueda<input type="text" data-k="fecha" placeholder="aaaa-mm-dd"></label>
+      <label>Filtros aplicados y por qué<input type="text" data-k="filtros"></label>
+      <label>Número de resultados (N)<input type="text" data-k="n" inputmode="numeric"></label>
+      <label>Versión de Biblioshiny<input type="text" data-k="version"></label>
+      <label>Parámetros de la red (campo, nodos, normalización, algoritmo)<input type="text" data-k="parametros"></label>
+      <label>Campos incompletos y cómo afectan mi análisis<textarea data-k="limites"></textarea></label>
+    </div>
+    <button type="button" class="copy" id="copyReg">Copiar mi registro</button>
+    <p class="fb" id="copyFb"></p>
+    <label class="tick"><input type="checkbox" data-done>Completé mi registro con mi propio tema</label>
+  </section>
+
+  <h2 style="font-size:20px;margin:36px 0 6px">Menús que no son válidos con datos de PubMed</h2>
+  <p class="intro">PubMed no exporta citas ni referencias citadas. Estos menús aparecerán vacíos, en cero o con resultados sin sentido:</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Menú</th><th>Opciones afectadas</th></tr></thead>
+    <tbody>
+      <tr><td>Overview</td><td>Average Citations per Year</td></tr>
+      <tr><td>Sources</td><td>Most Local Cited Sources · Sources' Local Impact</td></tr>
+      <tr><td>Authors</td><td>Most Local Cited Authors · Authors' Local Impact · Most Cited Countries</td></tr>
+      <tr><td>Documents</td><td>Most Global Cited Documents · Most Local Cited Documents · Most Local Cited References · References Spectroscopy</td></tr>
+      <tr><td>Intellectual Structure</td><td>Co-citation Network · Historiograph</td></tr>
+    </tbody></table></div>
+  <p class="intro">Si tu pregunta necesita citas, combina PubMed con OpenAlex (gratis), que sí incluye citas y referencias. Consulta la <a href="guia_software.html">guía de software</a>.</p>
+
+  <div class="foot">
+    <p>Valores de referencia verificados reproduciendo el análisis con bibliometrix 5.5.0 sobre el corpus congelado (919 registros) y contrastados con los archivos exportados en el laboratorio del 27 y 28 de octubre de 2026. Los nombres de menú se tomaron del código de Biblioshiny 5.5.0.</p>
+    <p>¿Dudas en un paso? Pregunta al tutor del curso (agente de IA) indicando el número de paso; recuerda verificar lo que te responda.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY="ruta_biblioshiny_v1";
+  var store={};
+  try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){store={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+  var steps=[].slice.call(document.querySelectorAll(".step"));
+  store.checks=store.checks||{}; store.ticks=store.ticks||{}; store.reg=store.reg||{};
+
+  function norm(s){return String(s||"").trim().toLowerCase().replace(",",".");}
+  function evaluate(ck){
+    var t=ck.dataset.type, ok=false, inp=ck.querySelector("input[type=text]");
+    if(t==="num"){ok=Number(norm(inp.value).replace(/\s/g,""))===Number(ck.dataset.answer);}
+    else if(t==="text"){ok=norm(inp.value)===ck.dataset.answer;}
+    else if(t==="range"){var v=parseFloat(norm(inp.value));ok=!isNaN(v)&&v>=+ck.dataset.min&&v<=+ck.dataset.max;}
+    else if(t==="choice"){var r=ck.querySelector("input[type=radio]:checked");ok=!!r&&r.value===ck.dataset.answer;if(!r)return null;}
+    return ok;
+  }
+  function show(ck,ok){
+    var fb=ck.querySelector(".fb");
+    if(ok===null){fb.className="fb bad";fb.textContent="Elige una opción.";return;}
+    fb.className="fb "+(ok?"ok":"bad"); fb.textContent=ok?fb.dataset.ok:fb.dataset.bad;
+  }
+  function stepDone(st){
+    var cks=st.querySelectorAll(".check"), tk=st.querySelectorAll("input[data-done]");
+    var all=true;
+    [].forEach.call(cks,function(c){if(!store.checks[c.id])all=false;});
+    [].forEach.call(tk,function(t){if(!t.checked)all=false;});
+    return all&&(cks.length+tk.length>0);
+  }
+  function refresh(){
+    var n=0; steps.forEach(function(st){var d=stepDone(st);st.classList.toggle("done",d);if(d)n++;});
+    document.getElementById("ptxt").textContent=n+" de "+steps.length+" pasos";
+    var p=Math.round(100*n/steps.length); document.getElementById("ppct").textContent=p+" %";
+    document.getElementById("pfill").style.width=p+"%";
+  }
+  [].forEach.call(document.querySelectorAll(".check"),function(ck,i){
+    ck.id="ck"+i;
+    ck.querySelector("button").addEventListener("click",function(){
+      var ok=evaluate(ck); show(ck,ok); if(ok!==null){store.checks[ck.id]=!!ok; save(); refresh();}
+    });
+    var inp=ck.querySelector("input[type=text]");
+    if(inp) inp.addEventListener("keydown",function(e){if(e.key==="Enter")ck.querySelector("button").click();});
+    if(store.checks[ck.id]){var fb=ck.querySelector(".fb");fb.className="fb ok";fb.textContent=fb.dataset.ok;}
+  });
+  [].forEach.call(document.querySelectorAll("input[data-done]"),function(t,i){
+    t.checked=!!store.ticks[i];
+    t.addEventListener("change",function(){store.ticks[i]=t.checked;save();refresh();});
+  });
+  [].forEach.call(document.querySelectorAll("#reg [data-k]"),function(f){
+    f.value=store.reg[f.dataset.k]||"";
+    f.addEventListener("input",function(){store.reg[f.dataset.k]=f.value;save();});
+  });
+  document.getElementById("copyReg").addEventListener("click",function(){
+    var lines=[].map.call(document.querySelectorAll("#reg label"),function(l){var f=l.querySelector("[data-k]");return l.firstChild.textContent.trim()+": "+(f.value||"(pendiente)");});
+    var txt="Registro de búsqueda y análisis bibliométrico\n"+lines.join("\n");
+    var fb=document.getElementById("copyFb");
+    function done(){fb.className="fb ok";fb.textContent="Registro copiado. Pégalo en tu expediente.";}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,fallback);}else fallback();
+    function fallback(){var ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done();}catch(e){fb.className="fb bad";fb.textContent="No se pudo copiar; selecciona el texto manualmente.";}document.body.removeChild(ta);}
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>
