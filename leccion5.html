@@ -107,7 +107,24 @@
   <div class="mini amber" style="margin-top:10px;"><p>Cuando la heterogeneidad es alta, el modelo de <b>efectos aleatorios</b> ensancha el intervalo: es más honesto porque reconoce que los estudios no miden lo mismo.</p></div>
 
   <h2 class="sec">La otra trampa: sesgo de publicación</h2>
-  <p class="body">Los estudios con resultado «bonito» se publican más; los que no hallan efecto se quedan en el cajón. Si solo ves lo publicado, el efecto combinado se ve <b>más grande</b> de lo real. El <b>funnel plot</b> (embudo) ayuda a sospecharlo: si es simétrico, bien; si le falta una esquina, quizá faltan estudios.</p>
+  <p class="body"><b>Imagínalo así:</b> 20 equipos estudian «¿dormir mejora la memoria?». Los <b>10 que encontraron un efecto bonito</b> lo publican fácil. De los <b>10 que no encontraron nada</b>, muchos <b>ni se molestan en publicar</b> (o la revista los rechaza) y se quedan «en el cajón».</p>
+  <p class="body">Resultado: en las bases <b>solo sobreviven los positivos</b>. Si tú juntas lo publicado, el efecto combinado se ve <b>más grande de lo que de verdad es</b>. A eso le llamamos <b>sesgo de publicación</b>.</p>
+  <div class="two">
+    <div class="mini teal"><h3>Funnel simétrico ✅</h3><p>Los estudios forman un embudo parejo. Sin señal de que falten estudios.</p></div>
+    <div class="mini coral"><h3>Funnel asimétrico ⚠️</h3><p>Le falta una esquina de abajo → <b>quizá hay estudios sin publicar</b>. El combinado podría estar inflado.</p></div>
+  </div>
+  <p class="body">El <b>funnel plot</b> (embudo) sirve para <b>sospecharlo</b>: cada punto es un estudio —los grandes y precisos arriba, los chicos y menos precisos abajo—. Mira los dos embudos: en el de la derecha faltan puntos en la esquina inferior izquierda.</p>
+  <div class="tool" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+    <figure style="margin:0;flex:1;min-width:230px;text-align:center;">
+      <svg viewBox="0 0 220 150" aria-label="funnel simétrico"><g id="fs"></g></svg>
+      <figcaption style="font-size:12px;color:var(--teal);font-weight:700;margin-top:2px;">Simétrico · sin señal</figcaption>
+    </figure>
+    <figure style="margin:0;flex:1;min-width:230px;text-align:center;">
+      <svg viewBox="0 0 220 150" aria-label="funnel asimétrico"><g id="fa"></g></svg>
+      <figcaption style="font-size:12px;color:var(--coral);font-weight:700;margin-top:2px;">Asimétrico · posible sesgo</figcaption>
+    </figure>
+  </div>
+  <div class="mini amber" style="margin-top:4px;"><p><b>Ojo:</b> un funnel asimétrico <b>no prueba</b> que falten estudios ni que haya fraude — solo lo hace <b>sospechar</b>. Es una señal para investigar, no una conclusión.</p></div>
 
   <h2 class="sec">Autoevaluación</h2>
   <details class="q"><summary>Dos meta-análisis con el mismo diamante (0.40), ¿dicen lo mismo?</summary>
@@ -127,7 +144,7 @@
     </ol>
   </div>
 
-  <div class="btnrow"><a href="leccion4.html">← Sesión 4</a><a href="index.html">Aula del curso →</a></div>
+  <div class="btnrow"><a href="leccion4.html">← Sesión 4</a><a href="index.html">Aula</a><a href="leccion6.html">Sesión 6 →</a></div>
   <p class="foot">Modelo simplificado con fines didácticos · datos sintéticos · no es evidencia real.</p>
 </div>
 
@@ -180,6 +197,26 @@
   document.getElementById("seg").addEventListener("click",function(e){var b=e.target.closest("button[data-m]");if(!b)return;mode=b.dataset.m;[].forEach.call(this.querySelectorAll("button"),function(x){x.classList.toggle("on",x===b);});draw();});
   if(window.matchMedia)window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",draw);
   draw();
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+  function el(t,a){var e=document.createElementNS("http://www.w3.org/2000/svg",t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  var pts=[[110,18],[98,32],[122,34],[88,50],[132,52],[106,58],[78,72],[142,70],[114,78],[66,95],[152,92],[96,100],[128,104],[54,120],[166,118],[84,126],[138,128],[108,132]];
+  function funnel(id,asym){
+    var g=document.getElementById(id); if(!g)return;
+    var ink=css("--indigo"),mute=css("--mute"),teal=css("--teal");
+    g.appendChild(el("line",{x1:110,y1:12,x2:34,y2:138,stroke:mute,"stroke-width":1,opacity:.5}));
+    g.appendChild(el("line",{x1:110,y1:12,x2:186,y2:138,stroke:mute,"stroke-width":1,opacity:.5}));
+    g.appendChild(el("line",{x1:110,y1:12,x2:110,y2:140,stroke:teal,"stroke-width":1,"stroke-dasharray":"3 3"}));
+    pts.forEach(function(p){
+      if(asym && p[0]<108 && p[1]>90) return; // faltan estudios chicos de efecto bajo (esquina inf. izq.)
+      var c=el("circle",{cx:p[0],cy:p[1],r:4.2,fill:ink,opacity:.85}); c.setAttribute("stroke","#fff"); c.setAttribute("stroke-width","1"); g.appendChild(c);
+    });
+  }
+  funnel("fs",false); funnel("fa",true);
 })();
 </script>
 </body>

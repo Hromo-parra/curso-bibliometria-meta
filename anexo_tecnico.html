@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Anexo técnico — Cómo se calcula y se construye</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115;
+  }}
+  :root[data-theme="dark"]{
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.55;}
+  a{color:var(--indigo); text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px 70px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0; font-size:13px; color:var(--mute);}
+  .nav .home{font-weight:700;}
+  .hero{background:var(--night); color:#fff; border-radius:16px; padding:24px 22px;}
+  .hero .kick{font-size:12px; font-weight:700; letter-spacing:1.4px; color:#AAB3D1; text-transform:uppercase;}
+  .hero h1{font-size:26px; margin:6px 0 8px; line-height:1.15;}
+  .hero p{color:#C7CEE3; font-size:14.5px; margin:0;}
+  .optional{display:flex; gap:11px; align-items:flex-start; background:var(--amberL); border:1px solid var(--amber);
+    border-radius:13px; padding:13px 15px; margin:16px 0; font-size:13.5px;}
+  .optional .ic{font-size:18px;}
+  h2.sec{font-size:21px; margin:32px 0 6px;} h3.sub{font-size:16px; margin:18px 0 4px; color:var(--indigo);}
+  p.body,li.body{font-size:15px; color:var(--ink);}
+  .toc{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 16px; margin:14px 0;}
+  .toc a{display:block; padding:5px 0; font-size:14px; font-weight:600;}
+  .formula{background:var(--soft); border-radius:10px; padding:14px 16px; margin:12px 0; text-align:center;
+    font-size:19px; font-family:"Georgia",serif; color:var(--ink);}
+  .formula small{font-size:13px; color:var(--mute); display:block; margin-top:6px; font-family:-apple-system,sans-serif;}
+  .ex{background:var(--tealL); border-radius:10px; padding:13px 15px; margin:10px 0; font-size:14px;}
+  .ex b{color:var(--teal);}
+  .steps{counter-reset:s; list-style:none; padding:0;}
+  .steps li{counter-increment:s; position:relative; padding:9px 0 9px 36px; font-size:14.5px; border-bottom:1px solid var(--border);}
+  .steps li:last-child{border-bottom:none;}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:8px; width:24px; height:24px; border-radius:7px;
+    background:var(--indigo); color:#fff; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center;}
+  .note{font-size:13px; color:var(--mute); font-style:italic; margin:8px 0;}
+  sub{font-size:.72em;}
+  .foot{font-size:12px; color:var(--mute); text-align:center; margin-top:26px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="home" href="index.html">← Aula del curso</a><span>Anexo técnico (opcional)</span></div>
+
+  <div class="hero">
+    <div class="kick">Para quien quiere el detalle</div>
+    <h1>Cómo se calcula y se construye</h1>
+    <p>El «bajo el capó» de las lecciones 4 y 5: de dónde salen el tamaño de efecto, la heterogeneidad y los dos gráficos.</p>
+  </div>
+
+  <div class="optional">
+    <span class="ic">💡</span>
+    <div><b>Material opcional.</b> El curso funciona sin esto. Aquí están las fórmulas y los pasos para quien quiera entender el cálculo o hacerlo en un programa (JASP, Jamovi, R). No hace falta memorizar nada.</div>
+  </div>
+
+  <div class="toc">
+    <a href="#efecto">1 · El tamaño de efecto (d de Cohen)</a>
+    <a href="#forest">2 · Cómo se construye un forest plot</a>
+    <a href="#combinar">3 · Cómo se combinan los estudios</a>
+    <a href="#hetero">4 · La heterogeneidad (I²)</a>
+    <a href="#funnel">5 · Cómo se construye un funnel plot</a>
+  </div>
+
+  <h2 class="sec" id="efecto">1 · El tamaño de efecto (d de Cohen)</h2>
+  <p class="body">Mide «qué tan grande» es la diferencia entre dos grupos, en una escala común. Se toma la diferencia de medias y se divide entre la desviación estándar (así deja de depender de las unidades):</p>
+  <div class="formula">d = (M<sub>1</sub> − M<sub>2</sub>) / DE<sub>combinada</sub>
+    <small>M₁, M₂ = medias de los dos grupos · DE = desviación estándar agrupada</small></div>
+  <div class="ex"><b>Ejemplo:</b> grupo que durmió M₁ = 24 palabras, grupo control M₂ = 20, DE = 10 → d = (24−20)/10 = <b>0.40</b> (efecto pequeño-moderado).</div>
+  <p class="note">Orientación: ~0.2 pequeño · ~0.5 moderado · ~0.8 grande (Cohen). Para proporciones se usa el odds ratio (OR) o el riesgo relativo; para relaciones, la correlación r.</p>
+
+  <h2 class="sec" id="forest">2 · Cómo se construye un forest plot</h2>
+  <p class="body">Es una fila por estudio. Cada fila necesita dos cosas: el efecto y su incertidumbre.</p>
+  <ol class="steps">
+    <li>Calcula el <b>tamaño de efecto</b> de cada estudio (el cuadro).</li>
+    <li>Calcula su <b>error estándar (EE)</b> — más participantes → EE más chico.</li>
+    <li>El <b>intervalo de confianza</b> (la barra) va de d − 1.96·EE a d + 1.96·EE.</li>
+    <li>El <b>tamaño del cuadro</b> es proporcional al peso del estudio (1/EE²).</li>
+    <li>La <b>línea vertical en 0</b> marca «sin efecto».</li>
+    <li>El <b>diamante</b> al final es el efecto combinado (sección 3).</li>
+  </ol>
+  <p class="note">En JASP o Jamovi solo introduces d (o las medias y DE) y el n de cada estudio; el programa dibuja todo.</p>
+
+  <h2 class="sec" id="combinar">3 · Cómo se combinan los estudios</h2>
+  <p class="body">No es un promedio simple: es un <b>promedio ponderado</b>, donde cada estudio pesa según su precisión (inverso de la varianza). Los estudios más grandes pesan más:</p>
+  <div class="formula">d<sub>combinada</sub> = Σ(w<sub>i</sub> · d<sub>i</sub>) / Σw<sub>i</sub>
+    <small>w<sub>i</sub> = 1 / EE<sub>i</sub>²  (el peso de cada estudio)</small></div>
+  <p class="body">Esto es el modelo de <b>efectos fijos</b>. El de <b>efectos aleatorios</b> añade un término extra (τ², la variación entre estudios) al denominador de cada peso, lo que reparte los pesos de forma más pareja y amplía el intervalo.</p>
+
+  <h2 class="sec" id="hetero">4 · La heterogeneidad (I²)</h2>
+  <p class="body">Responde: ¿la diferencia entre los estudios es más de la que esperaríamos solo por azar? Primero se calcula un estadístico Q; a partir de él, el I² expresa <b>qué porcentaje de la variación es «real»</b> y no de muestreo:</p>
+  <div class="formula">I² = (Q − gl) / Q × 100 %
+    <small>Q = suma ponderada de las distancias al combinado · gl = nº de estudios − 1</small></div>
+  <div class="ex"><b>Cómo leerlo (orientativo):</b> &lt;25 % baja · ~50 % moderada · &gt;75 % alta. Con I² alto, los estudios no concuerdan → conviene efectos aleatorios y explicar por qué difieren.</div>
+
+  <h2 class="sec" id="funnel">5 · Cómo se construye un funnel plot</h2>
+  <p class="body">Es un diagrama de dispersión para detectar posible sesgo de publicación:</p>
+  <ol class="steps">
+    <li>Eje <b>horizontal</b>: el tamaño de efecto de cada estudio.</li>
+    <li>Eje <b>vertical</b>: su precisión (el error estándar), <b>invertido</b> — los más precisos arriba.</li>
+    <li>Un punto por estudio; una línea vertical en el efecto combinado.</li>
+    <li>Las líneas diagonales forman el «embudo» esperado (95 %).</li>
+    <li>Se mira la <b>simetría</b>: si falta una esquina inferior, quizá faltan estudios pequeños «nulos» → posible sesgo.</li>
+  </ol>
+  <p class="note">La asimetría solo <b>sugiere</b> sesgo; no lo prueba. Existen pruebas formales (Egger), pero su interpretación también requiere cautela.</p>
+
+  <div class="optional" style="margin-top:28px;">
+    <span class="ic">⚙️</span>
+    <div><b>¿Dónde se hace sin programar?</b> En <b>JASP</b> o <b>Jamovi</b> (gratis, de clics): introduces los datos de cada estudio y ellos calculan d, el combinado, el I² y dibujan el forest y el funnel. En R, el paquete <b>metafor</b> hace lo mismo con código.</div>
+  </div>
+
+  <div class="nav" style="margin-top:24px;"><a class="home" href="index.html">← Aula del curso</a><a href="leccion5.html">Lección 5 →</a></div>
+  <p class="foot">Anexo técnico opcional · ejemplos ilustrativos con datos sintéticos.</p>
+</div>
+</body>
+</html>

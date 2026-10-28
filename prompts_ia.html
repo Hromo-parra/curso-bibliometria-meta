@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Banco de prompts con IA — Bibliometría y Meta-análisis</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF; --coralL:#FBE9EB;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }}
+  :root[data-theme="dark"]{
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115; --coralL:#3A1D23;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.5;}
+  a{color:var(--indigo); text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:780px; margin:0 auto; padding:0 16px 70px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0; font-size:13px; color:var(--mute);}
+  .nav .home{font-weight:700;}
+  .hero{background:var(--night); color:#fff; border-radius:16px; padding:24px 22px;}
+  .hero .kick{font-size:12px; font-weight:700; letter-spacing:1.4px; color:#AAB3D1; text-transform:uppercase;}
+  .hero h1{font-size:26px; margin:6px 0 8px; line-height:1.15;}
+  .hero p{color:#C7CEE3; font-size:14.5px; margin:0;}
+
+  .warn{display:flex; gap:11px; align-items:flex-start; background:var(--amberL); border:1px solid var(--amber);
+    border-radius:13px; padding:14px 16px; margin:16px 0; font-size:14px;}
+  .warn b{color:var(--ink);} .warn .ic{font-size:20px; line-height:1;}
+
+  .seg{display:flex; gap:8px; margin:18px 0 6px; position:sticky; top:env(safe-area-inset-top,0px); z-index:5;
+    background:var(--bg); padding:8px 0;}
+  .seg button{flex:1; padding:12px; border-radius:11px; border:1.5px solid var(--border);
+    background:var(--card); color:var(--ink); font-weight:700; font-size:14.5px; cursor:pointer;}
+  .seg button.on[data-r="biblio"]{border-color:var(--indigo); background:var(--soft); color:var(--indigo);}
+  .seg button.on[data-r="meta"]{border-color:var(--teal); background:var(--tealL); color:var(--teal);}
+
+  .sesblock{margin:22px 0;}
+  .sestag{font-size:12px; font-weight:800; letter-spacing:1px; color:var(--mute); text-transform:uppercase; margin-bottom:8px;}
+  .sestag b{color:var(--ink);}
+  .pcard{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:15px 16px; margin:10px 0;
+    box-shadow:0 2px 10px rgba(80,90,130,.05);}
+  .pcard .goal{font-size:13px; color:var(--mute); margin:0 0 8px; font-weight:600;}
+  .promptbox{background:var(--soft); border-radius:10px; padding:12px 13px; font-size:14px; color:var(--ink); position:relative; white-space:pre-wrap;}
+  .copybtn{display:inline-flex; align-items:center; gap:6px; margin-top:10px; border:1px solid var(--indigo);
+    background:var(--indigo); color:#fff; font-size:12.5px; font-weight:700; padding:7px 13px; border-radius:9px; cursor:pointer;}
+  .copybtn.done{background:var(--teal); border-color:var(--teal);}
+  details.anti{margin-top:11px; border:1px solid var(--amber); border-radius:10px; overflow:hidden;}
+  details.anti summary{cursor:pointer; list-style:none; padding:10px 13px; font-weight:700; font-size:13.5px;
+    color:var(--amber); background:var(--amberL);}
+  details.anti summary::-webkit-details-marker{display:none;}
+  details.anti summary::before{content:"▸ "; }
+  details.anti[open] summary::before{content:"▾ "; }
+  details.anti .body{padding:12px 14px; font-size:13.5px;}
+  details.anti .row{margin:7px 0;} details.anti .row b{color:var(--ink);}
+  .tagv{display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:20px; background:var(--tealL); color:var(--teal); margin-right:5px;}
+  .tagh{display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:20px; background:var(--coralL); color:var(--coral); margin-right:5px;}
+
+  .foot{font-size:12px; color:var(--mute); text-align:center; margin-top:26px;}
+  .hide{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="home" href="index.html">← Aula del curso</a><span>Banco de prompts con IA</span></div>
+
+  <div class="hero">
+    <div class="kick">Apoyo crítico de IA · de la Sesión 1 a la 6</div>
+    <h1>La IA en tu proyecto</h1>
+    <p>Prompts para avanzar tu propio estudio —bibliométrico o meta-analítico— semana a semana. Cópialos, úsalos en ChatGPT o Claude… y verifica siempre.</p>
+  </div>
+
+  <div class="warn">
+    <span class="ic">⚠️</span>
+    <div><b>Regla de oro:</b> la IA <b>propone y acelera; tú verificas y decides.</b> Ninguna salida de IA es evidencia por sí sola: recalcula los números y comprueba que cada referencia exista. Si la IA te da un dato que tú no le diste, probablemente lo inventó → deséchalo. La ruta sin IA siempre es válida.</div>
+  </div>
+
+  <div class="seg" id="seg">
+    <button data-r="biblio" class="on">Rama bibliometría</button>
+    <button data-r="meta">Rama meta-análisis</button>
+  </div>
+
+  <div id="bank"></div>
+
+  <p class="foot">Úsalo en la IA que prefieras. Los ejemplos son ilustrativos · espacio didáctico.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // data: por sesión, por rama. cada prompt: {goal, prompt, verify:[...], halluc:{bad, catch}}
+  var data={
+    biblio:[
+      {ses:1,titulo:"Panorama y tu pregunta",items:[
+        {goal:"Afinar tu pregunta descriptiva",
+         prompt:"Soy doctorando en psicología. Quiero estudiar [TU TEMA] con bibliometría. Ayúdame a afinar UNA pregunta descriptiva (cuánto se publica, quién, qué temas) y dime qué datos necesitaría para responderla. No inventes cifras ni estudios.",
+         verify:["Que la pregunta sea TUYA, no una que la IA 'rellenó'.","Que NO te dé estadísticas de tu tema (todavía no tienes datos)."],
+         bad:"Dice: \u00abel 73% de los estudios sobre tu tema\u2026\u00bb",
+         catch:"T\u00fa no le diste ning\u00fan dato \u2192 esa cifra est\u00e1 inventada \u2192 b\u00f3rrala."}
+      ]},
+      {ses:2,titulo:"Del resultado al corpus",items:[
+        {goal:"Revisar tus criterios de inclusión",
+         prompt:"Estos son mis criterios para decidir qué publicaciones entran a mi corpus sobre [TU TEMA]: [PEGA TUS CRITERIOS]. Señálame ambigüedades o huecos, con justificación. No decidas tú qué incluir ni inventes ejemplos de artículos reales.",
+         verify:["Que solo critique tus criterios, no que 'apruebe' artículos.","Que no te invente títulos o DOIs 'de ejemplo' como si fueran reales."],
+         bad:"Propone excluir fichas sin resumen o 'de baja calidad'.",
+         catch:"Va contra la regla del curso: no se excluye por datos faltantes ni por 'calidad' \u2192 ignóralo."}
+      ]},
+      {ses:3,titulo:"Descriptivos y redes",items:[
+        {goal:"Redactar hallazgos a partir de TU tabla",
+         prompt:"A partir de ESTA tabla ya calculada por mí [PEGA TU TABLA: años/revistas/conteos y el total], escribe 3 frases descriptivas. Usa denominadores (de cuántas en total). No agregues datos que no estén en la tabla ni infieras causas.",
+         verify:["Recalcula a mano al menos una cifra que la IA mencione.","Que cada frase se limite a tu tabla (nada de 'tendencia mundial')."],
+         bad:"Escribe 'el inter\u00e9s creci\u00f3 en todo el campo'.",
+         catch:"Tu tabla es solo tu corpus, no todo el campo \u2192 corrige la frase."},
+        {goal:"Etiquetar grupos de tu red (con cautela)",
+         prompt:"Tengo una red de co-ocurrencia con estos grupos de términos: [PEGA LOS GRUPOS]. Propón una etiqueta tentativa para cada grupo y, para cada una, un argumento EN CONTRA. No afirmes causalidad ni que un grupo 'es' una escuela.",
+         verify:["Que cada etiqueta venga con su contraargumento.","Que no convierta una etiqueta en un 'hallazgo'."],
+         bad:"Dice que un cl\u00faster 'demuestra' una corriente te\u00f3rica.",
+         catch:"Una etiqueta es una hipótesis, no una prueba \u2192 d\u00e9jala como tentativa."}
+      ]},
+      {ses:6,titulo:"Reproducibilidad e informe",items:[
+        {goal:"Revisar coherencia de tu informe",
+         prompt:"Revisa la coherencia entre el texto y las tablas de mi informe [PEGA TEXTO Y TABLAS]: ¿alguna cifra del texto no coincide con la tabla? Marca inconsistencias. No agregues referencias ni datos nuevos.",
+         verify:["Comprueba cada inconsistencia que marque contra tu tabla.","Que NO añada bibliografía 'que podrías citar'."],
+         bad:"Sugiere referencias con autor y a\u00f1o que t\u00fa no pusiste.",
+         catch:"Referencias no verificadas = posibles alucinaciones \u2192 no las uses sin comprobarlas en la fuente."}
+      ]}
+    ],
+    meta:[
+      {ses:1,titulo:"Panorama y tu pregunta",items:[
+        {goal:"Afinar tu pregunta de efecto",
+         prompt:"Soy doctorando en psicología. Quiero hacer un meta-análisis sobre [TU TEMA]. Ayúdame a formular UNA pregunta de efecto (¿qué tan grande es el efecto, en promedio?) y dime qué datos necesitaría de cada estudio. No inventes estudios ni tamaños de efecto.",
+         verify:["Que la pregunta compare un efecto, no que describa 'cuánto se publica'.","Que NO te dé un tamaño de efecto 'esperado' inventado."],
+         bad:"Dice 'se espera una d \u2248 0.6 seg\u00fan la literatura'.",
+         catch:"No le diste estudios \u2192 esa 'd' est\u00e1 inventada \u2192 descártala."}
+      ]},
+      {ses:2,titulo:"Del resultado al corpus",items:[
+        {goal:"Definir criterios de elegibilidad",
+         prompt:"Para mi meta-análisis sobre [TU TEMA], ayúdame a redactar criterios de elegibilidad claros (población, diseño, medida del efecto, periodo). Señala qué debería decidir yo. No decidas elegibilidad por mí ni inventes estudios de ejemplo.",
+         verify:["Que la decisión final de elegibilidad la tomes tú.","Que no 'rellene' con estudios ficticios."],
+         bad:"Lista 'estudios relevantes' con autores y a\u00f1os.",
+         catch:"Esos estudios pueden no existir \u2192 b\u00fascalos tú en la fuente antes de usarlos."}
+      ]},
+      {ses:4,titulo:"Tamaños de efecto · forest plot",items:[
+        {goal:"Leer tu forest plot",
+         prompt:"Tengo estos tamaños de efecto con sus intervalos: [PEGA TUS DATOS: estudio, d, IC]. Explícame en palabras qué muestra el forest plot, cuál estudio pesa más y si el combinado cruza el 0. No inventes estudios ni cambies mis números.",
+         verify:["Recalcula tú el efecto combinado (promedio ponderado).","Comprueba que cada estudio que menciona exista en TU lista."],
+         bad:"A\u00f1ade un 'Estudio F' o cambia un IC que no diste.",
+         catch:"Si aparece un dato que tú no entregaste, es alucinación \u2192 elim\u00ednalo."},
+        {goal:"Traducir una medida a tamaño de efecto",
+         prompt:"Un estudio reporta [MEDIA GRUPO A, MEDIA GRUPO B, DESVIACIONES, N]. Explícame cómo se obtiene un tamaño de efecto comparable (d) y qué significa el número. Muestra el procedimiento paso a paso con MIS datos; no inventes valores faltantes.",
+         verify:["Verifica el cálculo tú (o en JASP/Jamovi).","Que no rellene datos que no diste (p. ej. una desviación 'típica')."],
+         bad:"Asume una desviaci\u00f3n est\u00e1ndar porque 'suele ser as\u00ed'.",
+         catch:"Un dato faltante no se inventa \u2192 pídelo al estudio o márcalo como incierto."}
+      ]},
+      {ses:5,titulo:"Combinar · heterogeneidad · sesgo",items:[
+        {goal:"Interpretar heterogeneidad y sesgo",
+         prompt:"Mi meta-análisis dio un combinado de [VALOR] con un I² de [VALOR] y este funnel plot [DESCRÍBELO]. Interprétalo con cautela: ¿los estudios concuerdan? ¿hay señal de sesgo de publicación? No afirmes causas ni conviertas una sospecha en prueba.",
+         verify:["Que distinga 'sospecha de sesgo' de 'prueba de sesgo'.","Que no concluya causalidad a partir del combinado."],
+         bad:"Dice 'el funnel asim\u00e9trico prueba que hubo fraude'.",
+         catch:"La asimetr\u00eda solo sugiere posible sesgo \u2192 es se\u00f1al para investigar, no prueba."}
+      ]},
+      {ses:6,titulo:"Reproducibilidad e informe",items:[
+        {goal:"Revisar coherencia de tu informe",
+         prompt:"Revisa la coherencia entre el texto y las figuras de mi informe de meta-análisis [PEGA TEXTO Y DATOS]: ¿alguna cifra del texto no coincide con el forest plot? Marca inconsistencias. No agregues referencias ni estudios nuevos.",
+         verify:["Comprueba cada inconsistencia contra tus datos.","Que NO añada bibliografía inventada."],
+         bad:"Propone citas con DOI que t\u00fa no incluiste.",
+         catch:"DOIs no verificados = posible alucinación \u2192 comprueba cada uno antes de citarlo."}
+      ]}
+    ]
+  };
+
+  var bank=document.getElementById("bank"), rama="biblio";
+  function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  function render(){
+    bank.innerHTML="";
+    data[rama].forEach(function(block){
+      var div=document.createElement("div"); div.className="sesblock";
+      var h='<div class="sestag">Sesión '+block.ses+' · <b>'+block.titulo+'</b></div>';
+      block.items.forEach(function(p){
+        h+='<div class="pcard"><p class="goal">🎯 '+p.goal+'</p>'+
+           '<div class="promptbox">'+esc(p.prompt)+'</div>'+
+           '<button class="copybtn" data-copy="'+encodeURIComponent(p.prompt)+'">📋 Copiar prompt</button>'+
+           '<details class="anti"><summary>⚠️ Cómo evitar que alucine (con ejemplo)</summary><div class="body">'+
+             '<div class="row"><span class="tagv">VERIFICA</span>'+p.verify.map(esc).join('<br><span class="tagv" style="visibility:hidden">VERIFICA</span>')+'</div>'+
+             '<div class="row"><span class="tagh">ALUCINA</span>'+esc(p.bad)+'</div>'+
+             '<div class="row"><b>Cómo lo cachas:</b> '+esc(p.catch)+'</div>'+
+           '</div></details></div>';
+      });
+      div.innerHTML=h; bank.appendChild(div);
+    });
+  }
+  document.getElementById("seg").addEventListener("click",function(e){
+    var b=e.target.closest("button[data-r]"); if(!b)return; rama=b.dataset.r;
+    [].forEach.call(this.querySelectorAll("button"),function(x){x.classList.toggle("on",x===b);});
+    render();
+  });
+  bank.addEventListener("click",function(e){
+    var b=e.target.closest(".copybtn"); if(!b)return;
+    var txt=decodeURIComponent(b.dataset.copy);
+    var done=function(){b.textContent="✓ Copiado"; b.classList.add("done"); setTimeout(function(){b.textContent="📋 Copiar prompt"; b.classList.remove("done");},1600);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,function(){fallback(txt);done();});}
+    else{fallback(txt);done();}
+  });
+  function fallback(txt){var t=document.createElement("textarea");t.value=txt;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(t);}
+  render();
+})();
+</script>
+</body>
+</html>

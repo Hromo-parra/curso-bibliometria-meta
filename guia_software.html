@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Guía de software — Mapas bibliométricos</title>
+<style>
+  :root{
+    --indigo:#4F46E5; --teal:#0E9F8E; --amber:#E8A317; --coral:#D6485A;
+    --night:#1E2A4A; --ink:#1F2433; --mute:#667085; --bg:#F6F7FB;
+    --card:#FFFFFF; --border:#E3E6F0; --soft:#EEF0FD; --tealL:#E4F6F3; --amberL:#FCF3DF;
+    color-scheme: light dark; box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115;
+  }}
+  :root[data-theme="dark"]{
+    --ink:#EAECF4; --mute:#9AA3BD; --bg:#141A2B; --card:#1E2740; --border:#303C5C; --soft:#272F4D;
+    --night:#0E1424; --tealL:#193A38; --amberL:#3A3115;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.55;}
+  a{color:var(--indigo); text-decoration:none;} a:hover{text-decoration:underline;}
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px 70px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0; font-size:13px; color:var(--mute);}
+  .nav .home{font-weight:700;}
+  .hero{background:var(--night); color:#fff; border-radius:16px; padding:24px 22px;}
+  .hero .kick{font-size:12px; font-weight:700; letter-spacing:1.4px; color:#AAB3D1; text-transform:uppercase;}
+  .hero h1{font-size:26px; margin:6px 0 8px; line-height:1.15;}
+  .hero p{color:#C7CEE3; font-size:14.5px; margin:0;}
+  .verifybox{display:flex; gap:11px; align-items:flex-start; background:var(--amberL); border:1px solid var(--amber);
+    border-radius:13px; padding:13px 15px; margin:16px 0; font-size:13.5px;}
+  .verifybox .ic{font-size:18px;}
+  h2.sec{font-size:21px; margin:30px 0 6px;} h3.sub{font-size:15.5px; margin:16px 0 4px; color:var(--indigo);}
+  p.body,li.body{font-size:15px; color:var(--ink);}
+  .toolhead{display:flex; align-items:center; gap:10px; margin-top:8px;}
+  .toolhead .badge{font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tealL); color:var(--teal);}
+  .steps{counter-reset:s; list-style:none; padding:0; margin:8px 0;}
+  .steps li{counter-increment:s; position:relative; padding:9px 0 9px 36px; font-size:14.5px; border-bottom:1px solid var(--border);}
+  .steps li:last-child{border-bottom:none;}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:8px; width:24px; height:24px; border-radius:7px;
+    background:var(--indigo); color:#fff; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center;}
+  code{background:var(--soft); padding:2px 7px; border-radius:6px; font-size:13.5px; font-family:"Courier New",monospace;}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:13px; padding:15px 17px; margin:14px 0;}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0;}
+  @media(max-width:560px){.two{grid-template-columns:1fr;}}
+  .mini{border-radius:12px; padding:14px; border:1px solid var(--border);}
+  .mini.indigo{background:var(--soft);} .mini.teal{background:var(--tealL);}
+  .mini h3{margin:0 0 5px; font-size:15px;} .mini.indigo h3{color:var(--indigo);} .mini.teal h3{color:var(--teal);}
+  .mini p{margin:0; font-size:13px; color:var(--ink);}
+  .official{font-size:13.5px; color:var(--mute); margin:6px 0;}
+  .note{font-size:13px; color:var(--mute); font-style:italic; margin:8px 0;}
+  .foot{font-size:12px; color:var(--mute); text-align:center; margin-top:26px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a class="home" href="index.html">← Aula del curso</a><span>Guía de software (opcional)</span></div>
+
+  <div class="hero">
+    <div class="kick">Para hacer tus mapas de verdad</div>
+    <h1>Guía de software</h1>
+    <p>Dos programas gratuitos para construir mapas bibliométricos (redes de temas y colaboración): VOSviewer y bibliometrix / Biblioshiny.</p>
+  </div>
+
+  <div class="verifybox">
+    <span class="ic">⚠️</span>
+    <div><b>Verificado con las fuentes oficiales.</b> Los pasos de abajo se contrastaron con la documentación oficial de cada herramienta. Aun así, las versiones cambian: confirma el <b>número de versión exacto</b> en los sitios oficiales enlazados. No incluye capturas porque varían con cada versión.</div>
+  </div>
+
+  <h2 class="sec">¿Cuál me conviene?</h2>
+  <div class="two">
+    <div class="mini teal"><h3>VOSviewer</h3><p>Más visual y fácil para empezar; mapas muy vistosos. Necesita Java (o usa la versión en el navegador).</p></div>
+    <div class="mini indigo"><h3>bibliometrix / Biblioshiny</h3><p>Más completo (muchos análisis en uno). Necesita instalar R, pero se usa con clics.</p></div>
+  </div>
+  <p class="note">Para un primer mapa rápido: VOSviewer. Para un análisis bibliométrico completo: Biblioshiny. Las dos son gratis.</p>
+
+  <h2 class="sec">1 · VOSviewer</h2>
+  <div class="toolhead"><span class="badge">GRATIS</span><span class="official">Sitio oficial: <a href="https://www.vosviewer.com" target="_blank" rel="noopener">vosviewer.com</a></span></div>
+  <p class="body">Programa de escritorio del CWTS (Universidad de Leiden) para visualizar redes: co-ocurrencia de palabras clave, coautoría, co-citación y acoplamiento.</p>
+  <h3 class="sub">Instalación</h3>
+  <ol class="steps">
+    <li>Entra a <code>vosviewer.com</code> → sección <b>Download</b> y descarga la versión para tu sistema.</li>
+    <li>Descomprime y ejecuta el programa. Requiere <b>Java 8 o superior</b>; si no lo tienes, instálalo desde <a href="https://www.java.com/es/" target="_blank" rel="noopener">java.com</a> (la propia página de VOSviewer lo indica).</li>
+    <li>Alternativa sin instalar nada: <b>VOSviewer Online</b>, que corre en el navegador (sirve para ver y compartir mapas).</li>
+  </ol>
+  <h3 class="sub">Cómo hacer un mapa</h3>
+  <ol class="steps">
+    <li>Pulsa <b>Create</b> (crear).</li>
+    <li>Elige <b>«Create a map based on bibliographic data»</b>.</li>
+    <li>Carga tu archivo exportado (Web of Science, Scopus, Lens, RIS…) o conéctate por API — las versiones nuevas consultan <b>OpenAlex</b> directamente, sin exportar primero.</li>
+    <li>Elige el tipo de análisis: <b>co-occurrence</b> (palabras clave) para el mapa de temas; <b>co-authorship</b> para colaboración.</li>
+    <li>Ajusta el <b>umbral</b> (nº mínimo de ocurrencias) y genera el mapa.</li>
+    <li>Interpreta: tamaño del nodo = frecuencia · color = clúster · líneas = co-ocurrencia.</li>
+  </ol>
+  <p class="note">Recuerda lo de la Sesión 3: el umbral cambia la red. Documenta cuál usaste.</p>
+  <p class="note"><b>Tip de calidad:</b> usa un «thesaurus file» para unir variantes de un mismo término (p. ej. «memory» y «memories»); es la causa más común de un mapa de palabras ruidoso.</p>
+
+  <h2 class="sec">2 · bibliometrix / Biblioshiny</h2>
+  <div class="toolhead"><span class="badge">GRATIS</span><span class="official">Sitio oficial: <a href="https://www.bibliometrix.org" target="_blank" rel="noopener">bibliometrix.org</a></span></div>
+  <p class="body">Paquete de R (Aria &amp; Cuccurullo) con una interfaz gráfica llamada <b>Biblioshiny</b>: se usa con clics en el navegador, sin programar. Es «usar R sin escribir código».</p>
+  <h3 class="sub">Instalación (una sola vez)</h3>
+  <ol class="steps">
+    <li>Instala <b>R</b> desde <a href="https://www.r-project.org" target="_blank" rel="noopener">r-project.org</a> (CRAN). RStudio (opcional, cómodo): <a href="https://posit.co/download/rstudio-desktop/" target="_blank" rel="noopener">posit.co</a>.</li>
+    <li>Abre R y ejecuta: <code>install.packages("bibliometrix", dependencies=TRUE)</code></li>
+    <li>Luego, para abrir la interfaz: <code>library(bibliometrix)</code> y después <code>biblioshiny()</code></li>
+    <li>Se abrirá una página web <b>local</b> con menús de clics. De aquí en adelante, nada de código.</li>
+  </ol>
+  <h3 class="sub">Cómo usarlo</h3>
+  <ol class="steps">
+    <li><b>Data → Import</b>: sube tu exportación (Scopus CSV/BibTeX, WoS texto/BibTeX, Lens, Dimensions, PubMed).</li>
+    <li>Revisa <b>«Main Information»</b> (resumen del dataset: nº de documentos, años, autores).</li>
+    <li>Explora los menús: producción por año/autor/revista; <b>estructura conceptual</b> (mapa temático, co-word); <b>intelectual</b> (co-citación); <b>social</b> (colaboración); <b>three-fields plot</b>.</li>
+    <li>Exporta las figuras y tablas que necesites para tu informe.</li>
+  </ol>
+
+  <div class="card">
+    <h3 style="margin-top:0;color:var(--ink);">¿De dónde saco los datos?</h3>
+    <p class="body" style="margin:0;">Exportas registros de una base y los cargas en la herramienta. Gratis y sin cuenta: <b>OpenAlex</b> y <b>Crossref</b> (APIs). <b>PubMed</b> (biomédico). De pago: <b>Scopus</b> y <b>Web of Science</b>. Siempre documenta la fuente, la fecha y el N.</p>
+  </div>
+
+  <p class="note">Otra opción avanzada es <b>CiteSpace</b> (gratuito, requiere Java 8 o superior), más orientada a la evolución temporal de los temas. Descarga: <a href="https://citespace.podia.com" target="_blank" rel="noopener">citespace.podia.com</a>.</p>
+
+  <div class="nav" style="margin-top:24px;"><a class="home" href="index.html">← Aula del curso</a><a href="anexo_tecnico.html">Anexo técnico →</a></div>
+  <p class="foot">Guía basada en el funcionamiento establecido de estas herramientas · confirma versión y pasos actuales en los sitios oficiales.</p>
+</div>
+</body>
+</html>
