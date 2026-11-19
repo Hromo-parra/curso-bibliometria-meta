@@ -133,6 +133,53 @@
     </ol>
   </div>
 
+  <h2 class="sec">Demo en vivo · Biblioshiny</h2>
+  <p class="body">Antes de las mini-presentaciones se cierra el análisis del corpus <b>Genes / Epilepsia</b> con dos herramientas que ya conoces del corpus cerebelo.</p>
+
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:12px 0;">
+    <div style="background:var(--indigo);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;">
+      <span style="font-weight:800;font-size:14px;">Paso 1 · Mapa temático</span>
+      <span style="margin-left:auto;font-size:12px;opacity:.8;">~20 min</span>
+    </div>
+    <div style="padding:14px 16px;">
+      <p style="margin:0 0 8px;font-size:13px;color:var(--mute);">Conceptual Structure → Thematic Map</p>
+      <div style="background:var(--soft);border-radius:9px;padding:10px 13px;font-size:13px;margin-bottom:10px;">
+        Field: <b>Author Keywords (DE)</b> · Min. ocurrencias: <b>3</b> · N palabras: <b>30</b><br>
+        Clustering: <b>Community detection (Louvain)</b> · Normalización: <b>Association</b>
+      </div>
+      <p style="margin:0;font-size:13.5px;">Exporta PNG + xlsx antes de interpretar. Cuadrantes: <b>Motor</b> (↑densidad, ↑centralidad) · <b>Nicho</b> · <b>Básico/transversal</b> · <b>Emergentes</b>.</p>
+    </div>
+  </div>
+
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:12px 0;">
+    <div style="background:var(--teal);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;">
+      <span style="font-weight:800;font-size:14px;">Paso 2 · Evolución temática</span>
+      <span style="margin-left:auto;font-size:12px;opacity:.8;">~15 min</span>
+    </div>
+    <div style="padding:14px 16px;">
+      <p style="margin:0 0 8px;font-size:13px;color:var(--mute);">Conceptual Structure → Thematic Evolution</p>
+      <div style="background:var(--tealL);border-radius:9px;padding:10px 13px;font-size:13px;margin-bottom:10px;">
+        Cargar <b>EpiGene_Temporal_2000_2014.RData</b> (período 1) →<br>
+        después <b>EpiGene_Temporal_2015_2024.RData</b> (período 2) · N palabras: <b>20</b>
+      </div>
+      <p style="margin:0;font-size:13.5px;">Busca si <b>SCN1A</b>, <b>Dravet syndrome</b> o <b>precision medicine</b> aparecen solo en el segundo período.</p>
+    </div>
+  </div>
+
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:12px 0 24px;">
+    <div style="background:var(--amber);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;">
+      <span style="font-weight:800;font-size:14px;">Paso 3 · Comparación de corpus</span>
+      <span style="margin-left:auto;font-size:12px;opacity:.8;">~10 min</span>
+    </div>
+    <div style="padding:14px 16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;margin-bottom:10px;">
+        <div style="background:var(--amberL);border-radius:9px;padding:10px 12px;"><b>¿Qué comparten?</b><br>Epilepsia, seizures, EEG.</div>
+        <div style="background:var(--soft);border-radius:9px;padding:10px 12px;"><b>¿Qué es único?</b><br>SCN1A, Dravet · cerebelo, ataxia.</div>
+      </div>
+      <p style="margin:0;font-size:13px;color:var(--mute);">Pregunta de reflexión: ¿podrías combinar ambos corpus en un metaanálisis? — difieren en exposición, diseño y medida.</p>
+    </div>
+  </div>
+
   <h2 class="sec">Estructura de tu presentación · 5 minutos</h2>
   <p class="body">En la sesión presentas tu proyecto siguiendo este orden. Puedes tener la página abierta como referencia.</p>
   <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:10px 0 10px;">
@@ -163,19 +210,23 @@
   <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:10px 0 24px;">
     <div style="display:grid;grid-template-columns:68px 1fr;border-bottom:1px solid var(--border);">
       <div style="background:var(--indigo);color:#fff;padding:12px 6px;font-weight:800;font-size:13px;text-align:center;display:flex;align-items:center;justify-content:center;">9:00</div>
-      <div style="padding:11px 14px;"><b>Apertura</b> <span style="color:var(--mute);font-size:12px;">· 10 min</span><br><span style="font-size:13px;color:var(--mute);">¿Qué necesitaría un colega para repetir tu análisis? Concepto rápido de reproducibilidad.</span></div>
+      <div style="padding:11px 14px;"><b>Apertura</b> <span style="color:var(--mute);font-size:12px;">· 5 min</span><br><span style="font-size:13px;color:var(--mute);">¿Dónde quedamos? Repaso de la red Genes/Epilepsia · concepto rápido de reproducibilidad.</span></div>
     </div>
     <div style="display:grid;grid-template-columns:68px 1fr;border-bottom:1px solid var(--border);">
-      <div style="background:var(--teal);color:#fff;padding:12px 6px;font-weight:800;font-size:13px;text-align:center;display:flex;align-items:center;justify-content:center;">9:10</div>
-      <div style="padding:11px 14px;"><b>Checklist del expediente</b> <span style="color:var(--mute);font-size:12px;">· 10 min</span><br><span style="font-size:13px;color:var(--mute);">Recorrer la lista de piezas · aclarar dudas de la declaración de IA.</span></div>
+      <div style="background:var(--indigo);color:#fff;padding:12px 6px;font-weight:800;font-size:13px;text-align:center;display:flex;align-items:center;justify-content:center;">9:05</div>
+      <div style="padding:11px 14px;"><b>Mapa temático · Biblioshiny</b> <span style="color:var(--mute);font-size:12px;">· 20 min</span><br><span style="font-size:13px;color:var(--mute);">Conceptual Structure → Thematic Map · interpretar los 4 cuadrantes del corpus SCN1A.</span></div>
     </div>
     <div style="display:grid;grid-template-columns:68px 1fr;border-bottom:1px solid var(--border);">
-      <div style="background:var(--coral);color:#fff;padding:12px 6px;font-weight:800;font-size:13px;text-align:center;display:flex;align-items:center;justify-content:center;">9:20</div>
-      <div style="padding:11px 14px;"><b>Mini-presentaciones</b> <span style="color:var(--mute);font-size:12px;">· 70 min</span><br><span style="font-size:13px;color:var(--mute);">5 min por estudiante + 2 min de preguntas del grupo · estructura arriba.</span></div>
+      <div style="background:var(--teal);color:#fff;padding:12px 6px;font-weight:800;font-size:13px;text-align:center;display:flex;align-items:center;justify-content:center;">9:25</div>
+      <div style="padding:11px 14px;"><b>Evolución temática + comparación</b> <span style="color:var(--mute);font-size:12px;">· 25 min</span><br><span style="font-size:13px;color:var(--mute);">Thematic Evolution en dos períodos · comparar clusters con corpus Cerebelo/Epilepsia.</span></div>
     </div>
     <div style="display:grid;grid-template-columns:68px 1fr;border-bottom:1px solid var(--border);">
-      <div style="background:var(--amber);color:#fff;padding:12px 6px;font-weight:800;font-size:13px;text-align:center;display:flex;align-items:center;justify-content:center;">10:30</div>
-      <div style="padding:11px 14px;"><b>Síntesis grupal</b> <span style="color:var(--mute);font-size:12px;">· 15 min</span><br><span style="font-size:13px;color:var(--mute);">¿Qué resultado sorprendió más? · ¿Qué documentarías diferente? · clasificador de frases si queda tiempo.</span></div>
+      <div style="background:var(--coral);color:#fff;padding:12px 6px;font-weight:800;font-size:13px;text-align:center;display:flex;align-items:center;justify-content:center;">9:50</div>
+      <div style="padding:11px 14px;"><b>Mini-presentaciones</b> <span style="color:var(--mute);font-size:12px;">· 45 min</span><br><span style="font-size:13px;color:var(--mute);">5 min por estudiante + 2 min de preguntas del grupo · estructura arriba.</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:68px 1fr;border-bottom:1px solid var(--border);">
+      <div style="background:var(--amber);color:#fff;padding:12px 6px;font-weight:800;font-size:13px;text-align:center;display:flex;align-items:center;justify-content:center;">10:35</div>
+      <div style="padding:11px 14px;"><b>Síntesis grupal</b> <span style="color:var(--mute);font-size:12px;">· 10 min</span><br><span style="font-size:13px;color:var(--mute);">¿Qué resultado sorprendió más? · ¿Qué documentarías diferente? · clasificador de frases si queda tiempo.</span></div>
     </div>
     <div style="display:grid;grid-template-columns:68px 1fr;">
       <div style="background:var(--night);color:#fff;padding:12px 6px;font-weight:800;font-size:13px;text-align:center;display:flex;align-items:center;justify-content:center;">10:45</div>
