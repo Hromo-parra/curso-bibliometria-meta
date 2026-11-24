@@ -91,7 +91,22 @@
   <p class="body">Dos meta-análisis pueden dar el <b>mismo diamante</b> (p. ej. 0.40) y significar cosas distintas: en uno los estudios están todos cerca; en otro, muy dispersos. El promedio, solo, no te avisa.</p>
 
   <h2 class="sec">Heterogeneidad: ¿concuerdan?</h2>
-  <p class="body">Es qué tanto <b>difieren</b> los estudios entre sí. Si apuntan todos al mismo lado, concuerdan (baja heterogeneidad). Si están repartidos, no (alta). El <b>I²</b> es un número que resume eso.</p>
+  <p class="body">Es qué tanto <b>difieren</b> los estudios entre sí. Si apuntan todos al mismo lado, concuerdan (baja heterogeneidad). Si están repartidos, no (alta). El <b>I²</b> es un número que resume eso — sin fórmulas, así se lee:</p>
+
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:12px 0;">
+    <div style="display:grid;grid-template-columns:auto 1fr;border-bottom:1px solid var(--border);">
+      <div style="background:var(--teal);color:#fff;padding:10px 14px;font-weight:800;font-size:13px;display:flex;align-items:center;white-space:nowrap;">I² bajo<br><span style="font-weight:400;font-size:11px;">menos de 25%</span></div>
+      <div style="padding:10px 14px;font-size:14px;">Los estudios <b>dicen prácticamente lo mismo</b>. Se pueden combinar con confianza.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:auto 1fr;border-bottom:1px solid var(--border);">
+      <div style="background:var(--amber);color:#fff;padding:10px 14px;font-weight:800;font-size:13px;display:flex;align-items:center;white-space:nowrap;">I² medio<br><span style="font-weight:400;font-size:11px;">25%–75%</span></div>
+      <div style="padding:10px 14px;font-size:14px;">Hay <b>diferencias notables</b> entre estudios. Combínalos con precaución y busca el motivo.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:auto 1fr;">
+      <div style="background:var(--coral);color:#fff;padding:10px 14px;font-weight:800;font-size:13px;display:flex;align-items:center;white-space:nowrap;">I² alto<br><span style="font-weight:400;font-size:11px;">más de 75%</span></div>
+      <div style="padding:10px 14px;font-size:14px;">Los estudios <b>no se ponen de acuerdo</b>. Combinarlos en un solo número da una respuesta engañosa.</div>
+    </div>
+  </div>
 
   <h2 class="sec">Pruébalo: separa los estudios</h2>
   <p class="body"><b>Mueve los deslizadores</b> para acercar o separar los estudios, y cambia entre <b>fijos</b> y <b>aleatorios</b>. Observa la heterogeneidad y cómo se ensancha el intervalo del diamante.</p>
@@ -129,8 +144,8 @@
   <h2 class="sec">Autoevaluación</h2>
   <details class="q"><summary>Dos meta-análisis con el mismo diamante (0.40), ¿dicen lo mismo?</summary>
     <div class="ans"><span class="verd no">No necesariamente.</span> Hay que mirar la heterogeneidad: si los estudios no concuerdan, ese 0.40 es un promedio engañoso.</div></details>
-  <details class="q"><summary>Con alta heterogeneidad, ¿conviene efectos fijos o aleatorios?</summary>
-    <div class="ans"><span class="verd si">Aleatorios.</span> Reconoce que los estudios difieren y amplía el intervalo (más honesto).</div></details>
+  <details class="q"><summary>Con alta heterogeneidad, ¿cuál modelo conviene: el simple (fijos) o el más honesto (aleatorios)?</summary>
+    <div class="ans"><span class="verd si">El más honesto (efectos aleatorios).</span> Reconoce que los estudios no miden exactamente lo mismo y amplía el intervalo — es la señal de que el modelo admite esa incertidumbre.</div></details>
   <details class="q"><summary>Un funnel plot asimétrico siempre prueba que hubo fraude. ¿Verdadero o falso?</summary>
     <div class="ans"><span class="verd no">Falso.</span> Sugiere posible sesgo (p. ej. estudios sin publicar), no prueba fraude. Es una señal para investigar.</div></details>
 

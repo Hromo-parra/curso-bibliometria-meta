@@ -180,6 +180,40 @@
     </div>
   </div>
 
+  <h2 class="sec">Del mapa a la balanza</h2>
+  <p class="body">El mapa bibliométrico te dice <b>qué existe y dónde</b>. La balanza del meta-análisis pregunta si esos estudios se pueden <b>pesar juntos</b>. La pregunta entre los dos es siempre la misma.</p>
+
+  <div style="display:flex;align-items:stretch;gap:8px;margin:14px 0;flex-wrap:wrap;">
+    <div style="flex:1;min-width:130px;background:var(--soft);border-radius:12px;padding:14px 12px;text-align:center;">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--indigo);font-weight:800;margin-bottom:6px;">El mapa</div>
+      <b style="font-size:14px;">Bibliometría</b>
+      <p style="font-size:12.5px;color:var(--mute);margin:6px 0 0;">¿Qué se publicó? ¿Qué temas hay? ¿Cómo se conectan?</p>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--mute);font-size:20px;font-weight:800;padding:0 2px;">→</div>
+    <div style="flex:1;min-width:130px;background:var(--amberL);border:2px solid var(--amber);border-radius:12px;padding:14px 12px;text-align:center;">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--amber);font-weight:800;margin-bottom:6px;">La pregunta clave</div>
+      <b style="font-size:14px;">¿Son comparables?</b>
+      <p style="font-size:12.5px;color:var(--mute);margin:6px 0 0;">¿Miden lo mismo de la misma manera?</p>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--mute);font-size:20px;font-weight:800;padding:0 2px;">→</div>
+    <div style="flex:1;min-width:130px;background:var(--tealL);border-radius:12px;padding:14px 12px;text-align:center;">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--teal);font-weight:800;margin-bottom:6px;">La balanza</div>
+      <b style="font-size:14px;">Meta-análisis</b>
+      <p style="font-size:12.5px;color:var(--mute);margin:6px 0 0;">Si lo son: combínalos y mide el efecto.</p>
+    </div>
+  </div>
+
+  <p style="font-size:14.5px;margin:14px 0 8px;"><b>Para que los estudios se puedan pesar juntos, necesitan tres cosas:</b></p>
+  <div class="check-list" style="margin-bottom:14px;">
+    <div class="it"><span class="dot" style="background:var(--teal);"></span><div><b>Misma pregunta</b> — ¿comparan la misma variante genética, la misma condición clínica?</div></div>
+    <div class="it"><span class="dot" style="background:var(--teal);"></span><div><b>Mismo tipo de estudio</b> — ¿todos son casos-controles? ¿todos son ensayos clínicos?</div></div>
+    <div class="it"><span class="dot" style="background:var(--teal);"></span><div><b>Mismo tipo de número</b> — ¿todos reportan el mismo indicador (OR, proporción, diferencia de medias)? No se mezclan.</div></div>
+  </div>
+
+  <div style="background:var(--amberL);border-left:4px solid var(--amber);border-radius:0 10px 10px 0;padding:12px 16px;margin:0 0 24px;font-size:14px;">
+    <b>Pregunta de reflexión (10 min de clase):</b> Mira los clústeres del mapa de Genes/Epilepsia. ¿Podrías combinar estudios del clúster <em>SCN1A/Dravet</em> con estudios del clúster <em>expresión diferencial</em>? ¿Y con los del corpus Cerebelo/Epilepsia? — Los tres difieren en diseño, medida y pregunta: cada combinación requiere su propio análisis de comparabilidad.
+  </div>
+
   <h2 class="sec">Estructura de tu presentación · 5 minutos</h2>
   <p class="body">En la sesión presentas tu proyecto siguiendo este orden. Puedes tener la página abierta como referencia.</p>
   <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:10px 0 10px;">
@@ -234,8 +268,19 @@
     </div>
   </div>
 
+  <h2 class="sec">Vocabulario en palabras simples</h2>
+  <div class="check-list">
+    <div class="it"><span class="dot" style="background:var(--indigo);"></span><div><b>I²</b> — número que dice qué tan de acuerdo están los estudios entre sí. Bajo (menos del 25%): de acuerdo. Alto (más del 75%): no se ponen de acuerdo.</div></div>
+    <div class="it"><span class="dot" style="background:var(--indigo);"></span><div><b>Efectos aleatorios</b> — versión más honesta del meta-análisis cuando los estudios difieren entre sí. Amplía el intervalo para reconocer esa incertidumbre.</div></div>
+    <div class="it"><span class="dot" style="background:var(--indigo);"></span><div><b>Funnel plot</b> — gráfica en forma de embudo para detectar si faltan estudios negativos. Un embudo roto (asimétrico) es una señal para investigar, no una prueba.</div></div>
+    <div class="it"><span class="dot" style="background:var(--indigo);"></span><div><b>Mapa temático</b> — visualización de qué temas van juntos en la literatura y cuáles son centrales. Tiene 4 zonas: motor, nicho, transversal, emergentes.</div></div>
+    <div class="it"><span class="dot" style="background:var(--indigo);"></span><div><b>Red de co-ocurrencia</b> — mapa de qué palabras clave aparecen juntas en los artículos. Los colores son grupos, no escuelas ni disciplinas.</div></div>
+    <div class="it"><span class="dot" style="background:var(--indigo);"></span><div><b>Corpus</b> — el conjunto de artículos con reglas claras. No es "todo lo que salió en la búsqueda"; es el subconjunto que entra según tus criterios.</div></div>
+    <div class="it"><span class="dot" style="background:var(--indigo);"></span><div><b>Expediente reproducible</b> — carpeta con todo lo que otra persona necesita para repetir tu análisis: README, protocolo, fuentes originales, tablas, bitácora y declaración de IA.</div></div>
+  </div>
+
   <div class="btnrow"><a href="leccion5.html">← Sesión 5</a><a href="index.html">Aula del curso →</a></div>
-  <p class="foot">Ejercicio con fines didácticos · datos sintéticos · no es evidencia real. 🎓</p>
+  <p class="foot">Ejercicio con fines didácticos · datos sintéticos · no es evidencia real.</p>
 </div>
 
 <script>
